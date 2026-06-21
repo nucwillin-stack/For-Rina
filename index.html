@@ -1,0 +1,1789 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Rina</title>
+  <meta name="description" content="A soft, romantic, interactive love letter website for Rina from Azaan" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --bg:#fff8fb;
+      --bg2:#fffaf2;
+      --ink:#5a3947;
+      --muted:#846a76;
+      --pink:#ffbfd1;
+      --pink-deep:#f28bad;
+      --pink-soft:#ffe3ec;
+      --cream:#fff2df;
+      --cream-deep:#ffe7bf;
+      --lav:#efdfff;
+      --white-glass:rgba(255,255,255,.68);
+      --white-strong:rgba(255,255,255,.88);
+      --line:rgba(90,57,71,.08);
+      --shadow:0 24px 60px rgba(210,140,165,.16);
+      --shadow-strong:0 32px 70px rgba(210,140,165,.22);
+      --radius:30px;
+      --max:1180px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"Nunito", sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 8% 12%, rgba(255,191,209,.26), transparent 24%),
+        radial-gradient(circle at 92% 10%, rgba(255,231,191,.34), transparent 22%),
+        radial-gradient(circle at 50% 100%, rgba(255,227,236,.36), transparent 28%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:.34;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.9) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+        radial-gradient(circle at 50% 80%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+        radial-gradient(circle at 28% 65%, rgba(255,255,255,.75) 0 1.5px, transparent 3px);
+      background-size:180px 180px,220px 220px,200px 200px,160px 160px;
+    }
+
+    .wrap{
+      width:min(calc(100% - 2rem), var(--max));
+      margin-inline:auto;
+    }
+
+    .float-layer,
+    .sparkle-layer,
+    .burst-layer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+
+    .float-heart{
+      position:absolute;
+      width:16px;
+      height:16px;
+      background:rgba(242,139,173,.14);
+      transform:rotate(45deg);
+      border-radius:4px;
+      animation:floatUp linear infinite;
+    }
+    .float-heart::before,
+    .float-heart::after{
+      content:"";
+      position:absolute;
+      width:16px;
+      height:16px;
+      background:inherit;
+      border-radius:50%;
+    }
+    .float-heart::before{left:-8px}
+    .float-heart::after{top:-8px}
+
+    @keyframes floatUp{
+      from{transform:translateY(0) rotate(45deg) scale(.9); opacity:0}
+      15%{opacity:1}
+      to{transform:translateY(-120vh) rotate(45deg) scale(1.45); opacity:0}
+    }
+
+    .sparkle{
+      position:absolute;
+      width:12px;
+      height:12px;
+      animation:twinkle 2.8s ease-in-out infinite;
+      opacity:.85;
+    }
+    .sparkle::before,
+    .sparkle::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      background:rgba(255,255,255,.95);
+      border-radius:999px;
+      box-shadow:0 0 16px rgba(255,255,255,.95);
+    }
+    .sparkle::before{width:2px;height:12px}
+    .sparkle::after{width:12px;height:2px}
+
+    @keyframes twinkle{
+      0%,100%{opacity:.25;transform:scale(.7) rotate(0deg)}
+      50%{opacity:1;transform:scale(1.12) rotate(18deg)}
+    }
+
+    .burst{
+      position:absolute;
+      font-size:18px;
+      color:var(--pink-deep);
+      animation:burst 900ms ease-out forwards;
+      text-shadow:0 6px 18px rgba(242,139,173,.3);
+      will-change:transform,opacity;
+    }
+
+    @keyframes burst{
+      0%{transform:translate(0,0) scale(.7);opacity:0}
+      20%{opacity:1}
+      100%{transform:translate(var(--tx), var(--ty)) scale(1.2);opacity:0}
+    }
+
+    .reveal{
+      opacity:0;
+      transform:translateY(30px);
+      transition:opacity .9s ease, transform .9s ease;
+    }
+    .reveal.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    .stagger > *{
+      opacity:0;
+      transform:translateY(22px);
+      animation:rise .9s ease forwards;
+    }
+    .stagger > *:nth-child(1){animation-delay:.08s}
+    .stagger > *:nth-child(2){animation-delay:.18s}
+    .stagger > *:nth-child(3){animation-delay:.28s}
+    .stagger > *:nth-child(4){animation-delay:.38s}
+    .stagger > *:nth-child(5){animation-delay:.48s}
+
+    @keyframes rise{
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    .app-shell{
+      position:relative;
+      z-index:1;
+    }
+
+    .locked body{
+      overflow:hidden;
+    }
+
+    .lock-screen{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:1.5rem;
+      position:relative;
+      z-index:10;
+    }
+
+    .lock-card{
+      width:min(100%, 520px);
+      border-radius:34px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,248,251,.72));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-strong);
+      backdrop-filter:blur(18px);
+      padding:1.5rem;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .lock-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255,191,209,.2), transparent 24%),
+        radial-gradient(circle at 0% 100%, rgba(255,231,191,.18), transparent 28%);
+      pointer-events:none;
+    }
+
+    .lock-top{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:1rem;
+    }
+
+    .lock-badge{
+      width:84px;
+      height:84px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:radial-gradient(circle at 35% 35%, #ffeaf1, var(--pink) 58%, var(--pink-deep) 100%);
+      color:white;
+      font-size:2rem;
+      box-shadow:0 18px 34px rgba(242,139,173,.28);
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding:.5rem .95rem;
+      border-radius:999px;
+      background:rgba(255,255,255,.56);
+      border:1px solid var(--line);
+      color:var(--pink-deep);
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+      font-weight:800;
+      width:max-content;
+    }
+
+    h1,h2,h3{
+      margin:0;
+      font-family:"Baloo 2", cursive;
+      line-height:.92;
+      letter-spacing:-.02em;
+    }
+
+    .lock-title{
+      font-size:clamp(2.7rem, 8vw, 4.7rem);
+      max-width:10ch;
+    }
+
+    .lock-text,
+    .lead,
+    .side-note p,
+    .letter-main p,
+    .notes-grid p,
+    .big-band p,
+    .mini-game-shell p,
+    .modal-content p{
+      color:var(--muted);
+      line-height:1.85;
+    }
+
+    .lock-form{
+      display:grid;
+      gap:.9rem;
+      margin-top:.5rem;
+    }
+
+    .input-wrap{
+      display:grid;
+      gap:.45rem;
+    }
+
+    .input-label{
+      font-size:.92rem;
+      font-weight:800;
+      color:var(--ink);
+    }
+
+    .lock-input{
+      width:100%;
+      min-height:58px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.72);
+      padding:0 1rem;
+      font:800 1rem "Nunito", sans-serif;
+      color:var(--ink);
+      outline:none;
+      transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+    }
+
+    .lock-input:focus{
+      border-color:rgba(242,139,173,.45);
+      box-shadow:0 0 0 5px rgba(242,139,173,.12);
+    }
+
+    .helper{
+      font-size:.92rem;
+      color:var(--muted);
+      visibility:hidden;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.55rem;
+      min-height:54px;
+      padding:0 1.2rem;
+      border-radius:999px;
+      font-weight:800;
+      font-family:"Nunito", sans-serif;
+      transition:transform .2s ease, box-shadow .25s ease, background .25s ease, opacity .25s ease;
+    }
+
+    .btn-primary{
+      color:white;
+      background:linear-gradient(135deg, var(--pink), var(--pink-deep));
+      box-shadow:0 16px 34px rgba(242,139,173,.24);
+    }
+    .btn-primary:hover{
+      transform:translateY(-2px) scale(1.03);
+      box-shadow:0 22px 40px rgba(242,139,173,.3);
+    }
+
+    .btn-secondary{
+      color:var(--ink);
+      background:rgba(255,255,255,.64);
+      border:1px solid var(--line);
+      backdrop-filter:blur(8px);
+    }
+    .btn-secondary:hover{
+      transform:translateY(-2px);
+      background:rgba(255,255,255,.88);
+    }
+    .btn:active{transform:scale(.98)}
+
+    .lock-error{
+      display:none;
+      padding:.9rem 1rem;
+      border-radius:18px;
+      background:rgba(255,191,209,.18);
+      border:1px solid rgba(242,139,173,.18);
+      color:var(--ink);
+      font-weight:700;
+    }
+    .lock-error.show{display:block}
+
+    .site{
+      display:none;
+    }
+    .site.unlocked{
+      display:block;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:30;
+      backdrop-filter:blur(14px);
+      background:rgba(255,248,251,.74);
+      border-bottom:1px solid var(--line);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+      padding:.95rem 0;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:.8rem;
+      text-decoration:none;
+      color:var(--ink);
+    }
+
+    .brand-mark{
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 35% 35%, #ffeaf1, var(--pink) 58%, var(--pink-deep) 100%);
+      box-shadow:
+        inset 0 2px 10px rgba(255,255,255,.5),
+        0 12px 24px rgba(242,139,173,.2);
+      position:relative;
+    }
+
+    .brand-mark::after{
+      content:"❤";
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      color:#fffdfd;
+      font-size:1rem;
+    }
+
+    .brand span{
+      font-family:"Baloo 2", cursive;
+      font-size:1.35rem;
+      font-weight:800;
+      letter-spacing:.01em;
+    }
+
+    .nav-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+    }
+
+    .nav-links a{
+      text-decoration:none;
+      color:var(--muted);
+      font-weight:800;
+      position:relative;
+    }
+
+    .nav-links a::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-.18rem;
+      width:100%;
+      height:2px;
+      border-radius:999px;
+      background:linear-gradient(90deg, var(--pink), var(--pink-deep));
+      transform:scaleX(0);
+      transform-origin:right;
+      transition:transform .3s ease;
+    }
+
+    .nav-links a:hover::after{
+      transform:scaleX(1);
+      transform-origin:left;
+    }
+
+    main{
+      position:relative;
+      z-index:1;
+    }
+
+    .hero{
+      min-height:auto;
+      display:grid;
+      align-items:center;
+      padding:2.4rem 0 2.2rem;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:2rem;
+      align-items:center;
+    }
+
+    .hero-copy{
+      display:grid;
+      gap:1rem;
+    }
+
+    .hero-copy h1{
+      font-size:clamp(3.2rem, 9vw, 7rem);
+      max-width:10ch;
+    }
+
+    .hero-copy .lead{
+      max-width:56ch;
+      margin:0;
+      font-size:clamp(1rem, 1.45vw, 1.12rem);
+    }
+
+    .hero-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:1rem;
+      align-items:center;
+      margin-top:.25rem;
+    }
+
+    .hero-art{
+      min-height:360px;
+      display:grid;
+      place-items:center;
+      position:relative;
+    }
+
+    .dream-box{
+      width:min(100%, 520px);
+      aspect-ratio:4/4.2;
+      border-radius:34px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.58), rgba(255,255,255,.36)),
+        linear-gradient(140deg, #fff0f6, #fff8eb);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(14px);
+      position:relative;
+      overflow:hidden;
+      padding:1.2rem;
+    }
+
+    .blob{
+      position:absolute;
+      border-radius:999px;
+      filter:blur(2px);
+      opacity:.96;
+      animation:drift 7s ease-in-out infinite;
+    }
+    .blob.a{width:180px;height:180px;top:7%;right:7%;background:radial-gradient(circle at 30% 30%, #fffaf7, #ffe8a8 65%, #ffd57f)}
+    .blob.b{width:140px;height:72px;left:8%;top:16%;background:rgba(255,255,255,.82);animation-delay:1s}
+    .blob.c{width:122px;height:60px;left:22%;top:24%;background:rgba(255,255,255,.7);animation-delay:2s}
+    .blob.d{width:160px;height:78px;right:16%;top:38%;background:rgba(255,255,255,.72);animation-delay:1.5s}
+
+    @keyframes drift{
+      0%,100%{transform:translateY(0) translateX(0)}
+      50%{transform:translateY(-8px) translateX(4px)}
+    }
+
+    .letter-card{
+      position:absolute;
+      left:8%;
+      right:8%;
+      top:22%;
+      bottom:10%;
+      border-radius:28px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,248,245,.86));
+      border:1px solid var(--line);
+      box-shadow:0 18px 36px rgba(143,93,111,.12);
+      padding:1.25rem;
+      transform:rotate(-2deg);
+      transition:transform .35s ease, box-shadow .35s ease;
+    }
+
+    .letter-card:hover{
+      transform:rotate(-1deg) translateY(-4px);
+      box-shadow:0 22px 42px rgba(143,93,111,.16);
+    }
+
+    .letter-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:28px;
+      background:
+        linear-gradient(transparent 0 14%, rgba(242,139,173,.06) 14% 14.5%, transparent 14.5% 29%, rgba(242,139,173,.06) 29% 29.5%, transparent 29.5% 44%, rgba(242,139,173,.06) 44% 44.5%, transparent 44.5%);
+      pointer-events:none;
+    }
+
+    .tiny-kicker{
+      color:var(--pink-deep);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:.78rem;
+      font-weight:800;
+    }
+
+    .letter-card h3{
+      font-size:clamp(1.9rem, 3vw, 2.7rem);
+      margin:.35rem 0 .8rem;
+    }
+
+    .scribble{
+      height:12px;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(132,106,118,.16), rgba(132,106,118,.06));
+      margin:.7rem 0;
+    }
+    .scribble.short{width:56%}
+    .scribble.med{width:75%}
+    .scribble.long{width:92%}
+
+    section{padding:3rem 0}
+
+    .section-head{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:1rem;
+      align-items:end;
+      margin-bottom:1.5rem;
+    }
+
+    .kicker{
+      color:var(--pink-deep);
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-size:.82rem;
+      font-weight:800;
+      margin-bottom:.35rem;
+    }
+
+    .section-head h2{
+      font-size:clamp(2.2rem, 5vw, 4.2rem);
+    }
+
+    .glass,
+    .memory-strip,
+    .notes-grid article,
+    .big-band,
+    .mini-game-shell,
+    .promise-band{
+      background:var(--white-glass);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(14px);
+    }
+
+    .letter-layout{
+      display:grid;
+      grid-template-columns:.86fr 1.14fr;
+      gap:1.4rem;
+      align-items:start;
+    }
+
+    .side-note{
+      padding:1.35rem;
+      position:sticky;
+      top:5.8rem;
+    }
+
+    .letter-main{
+      padding:clamp(1.3rem, 2vw, 2rem);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .letter-main::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255,191,209,.18), transparent 24%),
+        linear-gradient(transparent 0 13%, rgba(90,57,71,.04) 13% 13.4%, transparent 13.4% 26%, rgba(90,57,71,.04) 26% 26.4%, transparent 26.4%);
+      pointer-events:none;
+    }
+
+    .letter-inner{
+      position:relative;
+      z-index:1;
+    }
+
+    .letter-main h3{
+      font-size:clamp(2rem, 4vw, 3rem);
+      margin-bottom:1rem;
+    }
+
+    .mini-list{
+      list-style:none;
+      margin:1.15rem 0 0;
+      padding:0;
+      display:grid;
+      gap:.9rem;
+    }
+
+    .mini-list li{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:.75rem;
+      align-items:start;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:linear-gradient(135deg, var(--pink), var(--cream-deep));
+      margin-top:.55rem;
+      box-shadow:0 0 0 6px rgba(242,139,173,.08);
+    }
+
+    .signature{
+      margin-top:1.4rem;
+      font-family:"Baloo 2", cursive;
+      font-size:1.45rem;
+      color:var(--pink-deep);
+    }
+
+    .memory-strip{
+      padding:1rem;
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:1rem;
+      margin-top:1.2rem;
+    }
+
+    .memory{
+      min-height:210px;
+      border-radius:24px;
+      padding:1rem;
+      position:relative;
+      overflow:hidden;
+      display:flex;
+      align-items:end;
+      color:#fffdfc;
+      isolation:isolate;
+      transform:translateY(0);
+      transition:transform .28s ease, box-shadow .28s ease;
+      cursor:pointer;
+      box-shadow:0 14px 28px rgba(88,52,67,.08);
+    }
+
+    .memory:hover{
+      transform:translateY(-6px) rotate(-.5deg);
+      box-shadow:0 18px 34px rgba(88,52,67,.14);
+    }
+
+    .memory::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-1;
+      background:linear-gradient(180deg, transparent, rgba(0,0,0,.34));
+    }
+
+    .memory.one::before,
+    .memory.two::before,
+    .memory.three::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:-2;
+    }
+
+    .memory.one::before{
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,.24), transparent 18%),
+        linear-gradient(145deg, #ffbfd1, #f28bad);
+    }
+
+    .memory.two::before{
+      background:
+        radial-gradient(circle at 70% 22%, rgba(255,255,255,.22), transparent 18%),
+        linear-gradient(145deg, #ffe8c6, #ffcfae);
+    }
+
+    .memory.three::before{
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,.18), transparent 18%),
+        linear-gradient(145deg, #ffd7e6, #c49bd8);
+    }
+
+    .memory span{
+      display:block;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:.8rem;
+      opacity:.92;
+      margin-bottom:.35rem;
+    }
+
+    .memory strong{
+      font-family:"Baloo 2", cursive;
+      font-size:1.5rem;
+      line-height:.98;
+    }
+
+    .memory-badge{
+      position:absolute;
+      top:14px;
+      right:14px;
+      min-width:40px;
+      height:40px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      background:rgba(255,255,255,.24);
+      backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.22);
+      box-shadow:0 8px 20px rgba(0,0,0,.08);
+    }
+
+    .notes-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1.2rem;
+      align-items:start;
+    }
+
+    .notes-grid article{
+      padding:1.25rem;
+      min-height:100%;
+    }
+
+    .notes-grid h3{
+      font-size:clamp(1.9rem, 3vw, 2.6rem);
+      margin-bottom:.25rem;
+    }
+
+    .quote-box{
+      margin-top:1rem;
+      border-radius:22px;
+      padding:1rem;
+      background:rgba(255,255,255,.52);
+      border:1px solid var(--line);
+      text-align:center;
+      font-weight:800;
+      line-height:1.75;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .quote-box::before{
+      content:"";
+      position:absolute;
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      background:rgba(255,191,209,.14);
+      top:-30px;
+      right:-20px;
+    }
+
+    .interactive-grid{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:1.2rem;
+      align-items:start;
+    }
+
+    .mini-game-shell{
+      padding:1.25rem;
+    }
+
+    .mini-game-shell h3{
+      font-size:clamp(1.9rem, 3vw, 2.6rem);
+      margin-bottom:.3rem;
+    }
+
+    .choice-grid{
+      display:grid;
+      gap:.8rem;
+      margin-top:1rem;
+    }
+
+    .choice-btn{
+      width:100%;
+      min-height:54px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.7);
+      color:var(--ink);
+      font:800 .98rem "Nunito", sans-serif;
+      text-align:left;
+      padding:0 1rem;
+      cursor:pointer;
+      transition:transform .18s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .choice-btn:hover{
+      transform:translateY(-2px);
+      background:rgba(255,255,255,.94);
+      box-shadow:0 10px 24px rgba(143,93,111,.08);
+    }
+
+    .result-box{
+      margin-top:1rem;
+      padding:1rem;
+      border-radius:18px;
+      background:linear-gradient(135deg, rgba(255,191,209,.18), rgba(255,255,255,.66));
+      border:1px solid rgba(242,139,173,.15);
+      display:none;
+      font-weight:700;
+      line-height:1.7;
+      color:var(--ink);
+    }
+    .result-box.show{display:block}
+
+    .compliment-shell{
+      padding:1.25rem;
+    }
+
+    .compliment-shell h3{
+      font-size:clamp(1.9rem, 3vw, 2.6rem);
+      margin-bottom:.25rem;
+    }
+
+    .bubble{
+      margin-top:1rem;
+      border-radius:22px;
+      padding:1.05rem 1rem;
+      background:rgba(255,255,255,.52);
+      border:1px solid var(--line);
+      min-height:140px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-weight:800;
+      font-size:1.05rem;
+      line-height:1.75;
+      color:var(--ink);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .bubble::before{
+      content:"";
+      position:absolute;
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      background:rgba(255,191,209,.14);
+      top:-30px;
+      right:-20px;
+    }
+
+    .mini-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.8rem;
+      margin-top:1rem;
+    }
+
+    .pill{
+      border:none;
+      cursor:pointer;
+      min-height:46px;
+      padding:0 1rem;
+      border-radius:999px;
+      font-weight:800;
+      color:var(--ink);
+      background:rgba(255,255,255,.7);
+      border:1px solid var(--line);
+      transition:transform .18s ease, background .25s ease;
+    }
+    .pill:hover{
+      transform:translateY(-2px);
+      background:rgba(255,255,255,.95);
+    }
+
+    .big-band{
+      margin-top:1.3rem;
+      padding:1.5rem;
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:1rem;
+      align-items:center;
+      background:
+        linear-gradient(135deg, rgba(255,191,209,.18), rgba(255,255,255,.44)),
+        rgba(255,255,255,.36);
+    }
+
+    .big-band h3,
+    .promise-band h3{
+      font-size:clamp(2rem, 4vw, 3rem);
+      margin-bottom:.35rem;
+    }
+
+    .heart-box{
+      display:grid;
+      gap:.8rem;
+    }
+
+    .heart-btn{
+      width:100%;
+      min-height:150px;
+      border:none;
+      cursor:pointer;
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 50% 35%, #ffe9f0, #ffbfd1 58%, #f28bad 100%);
+      color:white;
+      font-family:"Baloo 2", cursive;
+      font-size:1.6rem;
+      font-weight:800;
+      box-shadow:0 18px 36px rgba(242,139,173,.24);
+      transition:transform .18s ease, box-shadow .25s ease;
+      position:relative;
+      overflow:hidden;
+    }
+    .heart-btn:hover{
+      transform:translateY(-4px) scale(1.02);
+      box-shadow:0 22px 42px rgba(242,139,173,.32);
+    }
+    .heart-btn:active{transform:scale(.98)}
+
+    .heart-btn small{
+      display:block;
+      font-family:"Nunito", sans-serif;
+      font-size:.92rem;
+      font-weight:700;
+      opacity:.95;
+      margin-top:.15rem;
+    }
+
+    .count-pill{
+      min-height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      background:rgba(255,255,255,.72);
+      border:1px solid var(--line);
+      font-weight:800;
+    }
+
+    .promise-band{
+      margin-top:1.3rem;
+      padding:1.4rem;
+      display:grid;
+      gap:1rem;
+    }
+
+    .promise-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:.9rem;
+    }
+
+    .promise-chip{
+      min-height:112px;
+      border-radius:22px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.62);
+      padding:1rem;
+      display:grid;
+      align-content:start;
+      gap:.35rem;
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .promise-chip:hover{
+      transform:translateY(-4px);
+      box-shadow:0 14px 28px rgba(143,93,111,.08);
+    }
+    .promise-chip strong{
+      font-family:"Baloo 2", cursive;
+      font-size:1.2rem;
+      line-height:1;
+    }
+    .promise-chip span{
+      color:var(--muted);
+      line-height:1.65;
+      font-size:.95rem;
+    }
+
+    .footer{
+      padding:2rem 0 4rem;
+      color:var(--muted);
+      font-size:.95rem;
+    }
+
+    .footer-line{
+      height:1px;
+      background:var(--line);
+      margin-bottom:1rem;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(242,139,173,.32);
+      display:grid;
+      place-items:center;
+      padding:1rem;
+      z-index:1000;
+      backdrop-filter:blur(10px);
+      opacity:0;
+      visibility:hidden;
+      transition:opacity .28s ease, visibility .28s ease;
+    }
+    .modal.show{
+      opacity:1;
+      visibility:visible;
+    }
+
+    .modal-card{
+      width:min(100%, 430px);
+      border-radius:30px;
+      background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,248,251,.82));
+      border:1px solid var(--line);
+      box-shadow:var(--shadow-strong);
+      padding:1.35rem;
+      position:relative;
+      overflow:hidden;
+      transform:translateY(14px) scale(.98);
+      transition:transform .28s ease;
+    }
+    .modal.show .modal-card{
+      transform:translateY(0) scale(1);
+    }
+    .modal-card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255,191,209,.18), transparent 24%),
+        radial-gradient(circle at 0% 100%, rgba(255,231,191,.16), transparent 28%);
+      pointer-events:none;
+    }
+
+    .modal-inner{
+      position:relative;
+      z-index:1;
+    }
+
+    .modal-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+      margin-bottom:.8rem;
+    }
+
+    .modal-title{
+      font-size:2rem;
+      color:var(--pink-deep);
+    }
+
+    .icon-badge{
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      background:radial-gradient(circle at 35% 35%, #ffeaf1, var(--pink) 58%, var(--pink-deep) 100%);
+      color:white;
+      box-shadow:0 14px 24px rgba(242,139,173,.2);
+      font-size:1.1rem;
+    }
+
+    .modal-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.8rem;
+      margin-top:1rem;
+    }
+
+    @media (max-width:980px){
+      .hero-grid,
+      .section-head,
+      .letter-layout,
+      .notes-grid,
+      .big-band,
+      .interactive-grid{
+        grid-template-columns:1fr;
+      }
+
+      .side-note{
+        position:relative;
+        top:auto;
+      }
+
+      .memory-strip,
+      .promise-grid{
+        grid-template-columns:1fr;
+      }
+
+      .nav{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .hero-art{
+        min-height:300px;
+      }
+    }
+
+    @media (max-width:640px){
+      .hero{
+        padding-top:1.6rem;
+        padding-bottom:1.4rem;
+      }
+
+      .hero-copy h1{
+        max-width:8ch;
+        font-size:clamp(2.9rem, 14vw, 4.7rem);
+      }
+
+      .dream-box{
+        aspect-ratio:4/3.3;
+        padding:.9rem;
+      }
+
+      .letter-card{
+        left:6%;
+        right:6%;
+        top:16%;
+        bottom:8%;
+        padding:1rem;
+      }
+
+      .hero-art{
+        min-height:240px;
+      }
+
+      .nav-links{
+        gap:.8rem 1rem;
+      }
+
+      .section-head{
+        margin-bottom:1rem;
+      }
+
+      section{
+        padding:2.2rem 0;
+      }
+
+      .modal-card,
+      .lock-card{
+        padding:1.15rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="float-layer" aria-hidden="true">
+    <div class="float-heart" style="left:8%; bottom:-10vh; animation-duration:18s; animation-delay:0s;"></div>
+    <div class="float-heart" style="left:22%; bottom:-14vh; animation-duration:22s; animation-delay:4s;"></div>
+    <div class="float-heart" style="left:39%; bottom:-12vh; animation-duration:19s; animation-delay:7s;"></div>
+    <div class="float-heart" style="left:58%; bottom:-15vh; animation-duration:24s; animation-delay:2s;"></div>
+    <div class="float-heart" style="left:76%; bottom:-11vh; animation-duration:20s; animation-delay:5s;"></div>
+    <div class="float-heart" style="left:91%; bottom:-13vh; animation-duration:23s; animation-delay:8s;"></div>
+  </div>
+
+  <div class="sparkle-layer" aria-hidden="true">
+    <span class="sparkle" style="top:12%; left:14%; animation-delay:0s;"></span>
+    <span class="sparkle" style="top:20%; left:72%; animation-delay:1s;"></span>
+    <span class="sparkle" style="top:28%; left:42%; animation-delay:2.1s;"></span>
+    <span class="sparkle" style="top:46%; left:84%; animation-delay:.8s;"></span>
+    <span class="sparkle" style="top:60%; left:16%; animation-delay:2.7s;"></span>
+    <span class="sparkle" style="top:74%; left:66%; animation-delay:1.8s;"></span>
+    <span class="sparkle" style="top:82%; left:48%; animation-delay:3.1s;"></span>
+  </div>
+
+  <div class="burst-layer" id="burstLayer" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <section class="lock-screen" id="lockScreen">
+      <div class="lock-card reveal show">
+        <div class="lock-top">
+          <div class="lock-badge">❤</div>
+          <div class="eyebrow">Private love note</div>
+          <h1 class="lock-title">Unlock our little world.</h1>
+          <p class="lock-text">
+            This website is just for us. To open it, please enter our special date.
+          </p>
+
+          <form class="lock-form" id="lockForm">
+            <div class="input-wrap">
+              <label for="anniversaryInput" class="input-label">Our special date</label>
+              <input
+                id="anniversaryInput"
+                class="lock-input"
+                type="text"
+                inputmode="text"
+                autocomplete="off"
+                placeholder="Enter the date"
+                aria-describedby="lockHint"
+              />
+              <div class="helper" id="lockHint" style="visibility:hidden;">&nbsp;</div>
+            </div>
+            <button class="btn btn-primary" type="submit">Unlock for Rina</button>
+            <div class="lock-error" id="lockError">That is not it yet. Try again.</div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <div class="site" id="siteContent">
+      <header>
+        <div class="wrap nav">
+          <a href="#top" class="brand" aria-label="Homepage for Rina">
+            <div class="brand-mark" aria-hidden="true"></div>
+            <span>For Rina</span>
+          </a>
+
+          <nav class="nav-links" aria-label="Primary">
+            <a href="#letter">Letter</a>
+            <a href="#memories">Memories</a>
+            <a href="#interactive">Cute Stuff</a>
+            <a href="#reasons">Reasons</a>
+          </nav>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div class="wrap hero-grid">
+            <div class="hero-copy stagger">
+              <div class="eyebrow">Made with love by Azaan</div>
+              <h1>For the sweetest girl in my world.</h1>
+              <p class="lead">
+                Rina, I wanted to make something soft and special for you. A little place that holds my feelings, my favorite memories with you, and all the reasons you mean so much to me.
+              </p>
+              <div class="hero-actions">
+                <a class="btn btn-primary" href="#letter">Open your letter</a>
+                <button class="btn btn-secondary" type="button" id="cuteNoteBtn">Tap for a cute note</button>
+              </div>
+            </div>
+
+            <div class="hero-art reveal">
+              <div class="dream-box">
+                <div class="blob a"></div>
+                <div class="blob b"></div>
+                <div class="blob c"></div>
+                <div class="blob d"></div>
+
+                <div class="letter-card">
+                  <div class="tiny-kicker">A little note for Rina</div>
+                  <h3>My favorite person</h3>
+                  <div class="scribble long"></div>
+                  <div class="scribble med"></div>
+                  <div class="scribble long"></div>
+                  <div class="scribble short"></div>
+                  <div class="scribble med"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="letter" class="reveal">
+          <div class="wrap">
+            <div class="section-head">
+              <div>
+                <div class="kicker">Love letter</div>
+                <h2>A letter from me to you.</h2>
+              </div>
+              <p class="lead" style="margin:0;max-width:40ch;">
+                Something simple, cute, and full of love so you can always come back and read it whenever you want.
+              </p>
+            </div>
+
+            <div class="letter-layout">
+              <aside class="glass side-note">
+                <div class="kicker">Little reminders</div>
+                <h3 style="font-size:clamp(2rem,4vw,3rem);margin-top:.35rem;">You make my life feel softer.</h3>
+                <p>
+                  Being with you feels easy, warm, and special. I love the way we are together and I love how much comfort there is between us.
+                </p>
+
+                <ul class="mini-list">
+                  <li><span class="dot"></span><div><strong>You care for me so much</strong><br><span style="color:var(--muted);">and you always know how to make me feel special.</span></div></li>
+                  <li><span class="dot"></span><div><strong>I can be fully myself with you</strong><br><span style="color:var(--muted);">and that means everything to me.</span></div></li>
+                  <li><span class="dot"></span><div><strong>You are so unique</strong><br><span style="color:var(--muted);">and that is one of the biggest reasons I adore you.</span></div></li>
+                </ul>
+              </aside>
+
+              <article class="glass letter-main" aria-label="Love letter for Rina">
+                <div class="letter-inner">
+                  <div class="kicker">For Rina</div>
+                  <h3>My sweet girl,</h3>
+                  <p>
+                    I still think it is so cute that we met through a TikTok comment. Something so random brought me to someone so special, and now you mean so much to me. Out of all the ways we could have met, I am really happy it led me to you.
+                  </p>
+                  <p>
+                    Some of my favorite memories with you are the simple ones. Playing Roblox and Minecraft with you is so fun because everything feels better when I am with you. Calling you and FaceTiming you always makes me happy too. Seeing your face and hearing your voice is one of the best feelings ever.
+                  </p>
+                  <p>
+                    One of the biggest things I love about you is how much you care for me. You make me feel so loved and so special in a way that stays with me even after we stop talking. You have such a soft and caring heart, and I hope you always know how much I appreciate that.
+                  </p>
+                  <p>
+                    I also love how comfortable we are with each other. We can share everything openly, and I never feel like I have to hide who I am with you. What we have feels honest and real, and that makes you even more precious to me.
+                  </p>
+                  <p>
+                    I love how unique you are. Your interests, your personality, and the way you are so completely yourself make you stand out so much to me. You are unlike anyone else I have ever met. I love everything about you, your pretty face, your gorgeous smile, and your beautiful eyes that always make me melt.
+                  </p>
+                  <p>
+                    Rina, thank you for being in my life. Thank you for the laughs, the games, the calls, and the comfort you give me. You mean more to me than I can fully put into words, and I just want you to always remember how loved you are by me.
+                  </p>
+                  <div class="signature">Love, Azaan ♡</div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="memories" class="reveal">
+          <div class="wrap">
+            <div class="section-head">
+              <div>
+                <div class="kicker">Our memories</div>
+                <h2>The moments I always think about.</h2>
+              </div>
+              <p class="lead" style="margin:0;max-width:40ch;">
+                Tap each memory for a little extra note.
+              </p>
+            </div>
+
+            <div class="memory-strip">
+              <article class="memory one" data-message="I love that something as simple as a TikTok comment brought me to you. That tiny moment became something so important to me.">
+                <div class="memory-badge">♡</div>
+                <div>
+                  <span>How we met</span>
+                  <strong>The day we met through a TikTok comment</strong>
+                </div>
+              </article>
+
+              <article class="memory two" data-message="Playing Roblox and Minecraft with you is one of my favorite ways to spend time. You make every game more fun just by being there with me.">
+                <div class="memory-badge">★</div>
+                <div>
+                  <span>Our fun</span>
+                  <strong>Playing Roblox and Minecraft together</strong>
+                </div>
+              </article>
+
+              <article class="memory three" data-message="Calling you and FaceTiming you always makes my day better. Hearing your voice and seeing your face gives me so much comfort.">
+                <div class="memory-badge">☁</div>
+                <div>
+                  <span>My favorite comfort</span>
+                  <strong>Going on calls and FaceTiming you</strong>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="interactive" class="reveal">
+          <div class="wrap">
+            <div class="section-head">
+              <div>
+                <div class="kicker">Cute stuff</div>
+                <h2>Little interactive things for you.</h2>
+              </div>
+              <p class="lead" style="margin:0;max-width:40ch;">
+                I wanted this to feel playful and alive, so I added a few soft little surprises.
+              </p>
+            </div>
+
+            <div class="interactive-grid">
+              <article class="mini-game-shell">
+                <div class="kicker">Mini quiz</div>
+                <h3>How much do I adore you?</h3>
+                <p>Pick the right answer.</p>
+                <div class="choice-grid">
+                  <button class="choice-btn" data-quiz="wrong">A little bit</button>
+                  <button class="choice-btn" data-quiz="right">More than words can explain</button>
+                  <button class="choice-btn" data-quiz="wrong">Only when we play games</button>
+                </div>
+                <div class="result-box" id="quizResult"></div>
+              </article>
+
+              <article class="compliment-shell glass">
+                <div class="kicker">Compliment button</div>
+                <h3>Tap for something sweet.</h3>
+                <p>
+                  Every tap gives you a little reminder of how lovely you are to me.
+                </p>
+
+                <div class="bubble" id="complimentBubble">
+                  Rina, your smile makes everything feel softer.
+                </div>
+
+                <div class="mini-actions">
+                  <button class="pill" type="button" id="newComplimentBtn">New compliment</button>
+                  <button class="pill" type="button" id="copyComplimentBtn">Copy this one</button>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="reasons" class="reveal">
+          <div class="wrap">
+            <div class="section-head">
+              <div>
+                <div class="kicker">Why I love you</div>
+                <h2>The sweetest things about you.</h2>
+              </div>
+              <p class="lead" style="margin:0;max-width:40ch;">
+                There are so many reasons, but these are some of the ones closest to my heart.
+              </p>
+            </div>
+
+            <div class="notes-grid">
+              <article class="glass">
+                <div class="kicker">Your heart</div>
+                <h3>You care for me so deeply.</h3>
+                <p>
+                  The way you love me and care for me makes me feel incredibly special. You have such a kind heart, and I never stop appreciating how safe and loved you make me feel.
+                </p>
+                <div class="quote-box">You always know how to make me feel important and cared for</div>
+              </article>
+
+              <article class="glass">
+                <div class="kicker">Our bond</div>
+                <h3>I love how comfortable we are.</h3>
+                <p>
+                  I love that we can share everything openly and be fully ourselves with each other. That comfort is rare, and it makes what we have feel so real and so special to me.
+                </p>
+                <div class="quote-box">Being with you feels easy, natural, and safe</div>
+              </article>
+            </div>
+
+            <div class="big-band">
+              <div>
+                <div class="kicker">One more thing</div>
+                <h3>You are truly one of a kind.</h3>
+                <p>
+                  I love how unique your interests are and how different you are from anyone else I have ever met. Your pretty face, your gorgeous smile, and your beautiful eyes make you even more unforgettable to me.
+                </p>
+              </div>
+
+              <div class="heart-box">
+                <button class="heart-btn" id="heartBtn" type="button">
+                  ❤ Tap me
+                  <small>for extra love</small>
+                </button>
+                <div class="count-pill">Love taps: <span id="heartCount" style="margin-left:.4rem;">0</span></div>
+              </div>
+            </div>
+
+            <div class="promise-band glass">
+              <div>
+                <div class="kicker">Little promises</div>
+                <h3>Things I want you to always know.</h3>
+              </div>
+              <div class="promise-grid">
+                <div class="promise-chip">
+                  <strong>I will appreciate you</strong>
+                  <span>for your heart, your softness, and every little thing that makes you you.</span>
+                </div>
+                <div class="promise-chip">
+                  <strong>I will keep choosing you</strong>
+                  <span>in the quiet moments, the cute moments, and all the ordinary moments too.</span>
+                </div>
+                <div class="promise-chip">
+                  <strong>I will keep reminding you</strong>
+                  <span>that you are loved deeply, sweetly, and so very much by me.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <div class="wrap">
+            <div class="footer-line"></div>
+            <p>Made with love for Rina by Azaan ♡</p>
+          </div>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal" id="mainModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-inner">
+        <div class="modal-head">
+          <h3 class="modal-title" id="modalTitle">A sweet note</h3>
+          <div class="icon-badge" id="modalIcon">❤</div>
+        </div>
+        <p id="modalText">Message goes here.</p>
+        <div class="modal-actions">
+          <button class="btn btn-primary" id="modalCloseBtn" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const lockScreen = document.getElementById("lockScreen");
+    const siteContent = document.getElementById("siteContent");
+    const lockForm = document.getElementById("lockForm");
+    const anniversaryInput = document.getElementById("anniversaryInput");
+    const lockError = document.getElementById("lockError");
+
+    const burstLayer = document.getElementById("burstLayer");
+    const cuteNoteBtn = document.getElementById("cuteNoteBtn");
+    const heartBtn = document.getElementById("heartBtn");
+    const heartCount = document.getElementById("heartCount");
+    const quizResult = document.getElementById("quizResult");
+    const complimentBubble = document.getElementById("complimentBubble");
+    const newComplimentBtn = document.getElementById("newComplimentBtn");
+    const copyComplimentBtn = document.getElementById("copyComplimentBtn");
+
+    const modal = document.getElementById("mainModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalText = document.getElementById("modalText");
+    const modalIcon = document.getElementById("modalIcon");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+
+    let count = 0;
+
+    const compliments = [
+      "Rina, your smile makes everything feel softer.",
+      "I love how easy it is to be myself with you.",
+      "You make ordinary moments feel so special to me.",
+      "Your pretty face, gorgeous smile, and beautiful eyes stay on my mind all the time.",
+      "You have one of the sweetest hearts I have ever known.",
+      "I love how unique you are. There is nobody else like you.",
+      "Every call with you feels like comfort wrapped in love.",
+      "You make me feel so lucky just by being you."
+    ];
+
+    function normalizeDate(value){
+      return value
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .replace(/\./g, "")
+        .replace(/,/g, "")
+        .trim();
+    }
+
+    function isCorrectAnniversary(value){
+      const v = normalizeDate(value);
+      const accepted = [
+        "march 10",
+        "march 10th",
+        "mar 10",
+        "mar 10th",
+        "3/10",
+        "03/10",
+        "3-10",
+        "03-10",
+        "10 march",
+        "10th march"
+      ];
+      return accepted.includes(v);
+    }
+
+    function openModal(title, text, icon = "❤"){
+      modalTitle.textContent = title;
+      modalText.textContent = text;
+      modalIcon.textContent = icon;
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+      modalCloseBtn.focus();
+    }
+
+    function closeModal(){
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    function burstAt(x, y, amount = 10){
+      for(let i = 0; i < amount; i++){
+        const item = document.createElement("span");
+        item.className = "burst";
+        item.textContent = Math.random() > 0.5 ? "❤" : "✦";
+        item.style.left = x + "px";
+        item.style.top = y + "px";
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 28 + Math.random() * 72;
+        item.style.setProperty("--tx", Math.cos(angle) * distance + "px");
+        item.style.setProperty("--ty", Math.sin(angle) * distance + "px");
+        burstLayer.appendChild(item);
+        setTimeout(() => item.remove(), 900);
+      }
+    }
+
+    lockForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const value = anniversaryInput.value;
+
+      if(isCorrectAnniversary(value)){
+        lockError.classList.remove("show");
+        lockScreen.style.display = "none";
+        siteContent.classList.add("unlocked");
+        document.body.style.overflow = "auto";
+        openModal("Unlocked", "Welcome to our little love letter world.", "♡");
+        setTimeout(() => {
+          observeReveals();
+        }, 50);
+      } else {
+        lockError.classList.add("show");
+        anniversaryInput.focus();
+        const rect = anniversaryInput.getBoundingClientRect();
+        burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 8);
+      }
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add("show");
+        }
+      });
+    }, { threshold: 0.14 });
+
+    function observeReveals(){
+      document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+    }
+
+    cuteNoteBtn.addEventListener("click", () => {
+      const rect = cuteNoteBtn.getBoundingClientRect();
+      burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 14);
+      openModal("A sweet note for Rina", "Rina, every time I talk to you, play with you, or see your face, my whole day feels better.", "❤");
+    });
+
+    document.querySelectorAll(".memory").forEach(card => {
+      card.addEventListener("click", () => {
+        const rect = card.getBoundingClientRect();
+        burstAt(rect.left + rect.width / 2, rect.top + 70, 8);
+        openModal("A little memory", card.dataset.message, "✦");
+      });
+    });
+
+    document.querySelectorAll(".choice-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const result = btn.dataset.quiz;
+        quizResult.classList.add("show");
+        if(result === "right"){
+          quizResult.textContent = "Correct. I adore you more than words can explain.";
+          const rect = btn.getBoundingClientRect();
+          burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 12);
+        } else {
+          quizResult.textContent = "Cute try, but the real answer is always more than words can explain.";
+        }
+      });
+    });
+
+    function randomCompliment(){
+      const text = compliments[Math.floor(Math.random() * compliments.length)];
+      complimentBubble.style.opacity = "0";
+      complimentBubble.style.transform = "scale(.98)";
+      setTimeout(() => {
+        complimentBubble.textContent = text;
+        complimentBubble.style.opacity = "1";
+        complimentBubble.style.transform = "scale(1)";
+      }, 140);
+    }
+
+    newComplimentBtn.addEventListener("click", () => {
+      randomCompliment();
+      const rect = newComplimentBtn.getBoundingClientRect();
+      burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 8);
+    });
+
+    copyComplimentBtn.addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(complimentBubble.textContent.trim());
+        openModal("Copied", "Your compliment is copied and ready to send.", "♡");
+      } catch(e){
+        openModal("Your compliment", complimentBubble.textContent.trim(), "♡");
+      }
+    });
+
+    heartBtn.addEventListener("click", () => {
+      count++;
+      heartCount.textContent = count;
+      const rect = heartBtn.getBoundingClientRect();
+      burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 16);
+
+      if(count === 10){
+        openModal("So much love", "You already tapped this ten times. That is actually adorable.", "❤");
+      }
+    });
+
+    modalCloseBtn.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", (e) => {
+      if(e.target === modal){
+        closeModal();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && modal.classList.contains("show")){
+        closeModal();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if(
+        e.target.closest("button") ||
+        e.target.closest("a") ||
+        e.target.closest(".memory") ||
+        e.target.closest(".modal-card") ||
+        e.target.closest(".lock-card")
+      ) return;
+      burstAt(e.clientX, e.clientY, 5);
+    });
+
+    anniversaryInput.focus();
+  </script>
+</body>
+</html>
