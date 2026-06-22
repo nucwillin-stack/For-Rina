@@ -1976,14 +1976,13 @@
 
     anniversaryInput.focus();
   </script>
-<!-- FIREBASE UPLOAD SCRIPT -->
+  <!-- FIREBASE UPLOAD SCRIPT -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-  // Your actual Firebase keys!
   const firebaseConfig = {
     apiKey: "AIzaSyAs8HG5DgzQnDl9tvgqhgfn3di6JEg-z7E",
     authDomain: "for-rina.firebaseapp.com",
@@ -1993,89 +1992,229 @@
     appId: "1:842717774514:web:67c5c5cec445c8953dffab"
   };
 
-  // CHANGE THIS TO THE EMAIL YOU CREATED IN FIREBASE AUTHENTICATION
-  const ADMIN_EMAIL = "nucwillin@gmail.com"; 
+  // ⚠️ CHANGE THIS TO THE EMAIL YOU SET UP IN FIREBASE
+  const ADMIN_EMAIL = "you@example.com"; 
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
+  try {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-  document.getElementById('adminLoginToggle').onclick = () => document.getElementById('adminPanel').style.display = document.getElementById('adminPanel').style.display === 'none' ? 'block' : 'none';
+    document.getElementById('adminLoginToggle').onclick = () => {
+      const p = document.getElementById('adminPanel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    };
 
-  document.getElementById('doLoginBtn').onclick = async () => {
-    try { await signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPass').value); } 
-    catch (e) { alert(e.message); }
-  };
+    document.getElementById('doLoginBtn').onclick = async () => {
+      const status = document.getElementById('statusText');
+      try { 
+        status.innerText = "Connecting...";
+        const email = document.getElementById('adminEmail').value.trim();
+        const pass = document.getElementById('adminPass').value;
+        await signInWithEmailAndPassword(auth, email, pass); 
+        status.innerText = "Login successful! Loading panel...";
+      } 
+      catch (e) { 
+        status.innerText = "Error: " + e.message; 
+      }
+    };
 
-  document.getElementById('logoutBtn').onclick = () => signOut(auth);
+    document.getElementById('logoutBtn').onclick = () => signOut(auth);
 
-  onAuthStateChanged(auth, (user) => {
-    // We make sure the email matches exactly (ignoring uppercase/lowercase differences)
-    const isMe = user && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-    
-    if (isMe) {
-      document.getElementById('loginBox').style.display = 'none';
-      document.getElementById('uploadBox').style.display = 'block';
-      document.getElementById('logoutBtn').style.display = 'inline-block';
-      document.getElementById('statusText').innerText = "Logged in successfully!";
-    } else {
-      document.getElementById('loginBox').style.display = 'block';
-      document.getElementById('uploadBox').style.display = 'none';
-      document.getElementById('logoutBtn').style.display = 'none';
-      document.getElementById('statusText').innerText = "";
-    }
-  });
+    onAuthStateChanged(auth, (user) => {
+      try {
+        if (!user) {
+          document.getElementById('loginBox').style.display = 'block';
+          document.getElementById('uploadBox').style.display = 'none';
+          document.getElementById('logoutBtn').style.display = 'none';
+          return;
+        }
+        
+        // Safety check to prevent crashing if email is typed weirdly
+        const myEmail = ADMIN_EMAIL ? ADMIN_EMAIL.toLowerCase().trim() : "";
+        const userEmail = user.email ? user.email.toLowerCase().trim() : "";
 
-  // Also update the login button to show a message if it succeeds
-  document.getElementById('doLoginBtn').onclick = async () => {
-    try { 
-      document.getElementById('statusText').innerText = "Logging in...";
-      await signInWithEmailAndPassword(auth, document.getElementById('adminEmail').value, document.getElementById('adminPass').value); 
-    } 
-    catch (e) { 
-      document.getElementById('statusText').innerText = e.message; 
-    }
-  };
-
-  document.getElementById('doUploadBtn').onclick = async () => {
-    const file = document.getElementById('memFile').files[0];
-    if(!file) return alert("Select a photo!");
-    
-    document.getElementById('statusText').innerText = "Uploading...";
-    const fileRef = ref(storage, 'memories/' + Date.now());
-    await uploadBytes(fileRef, file);
-    const url = await getDownloadURL(fileRef);
-
-    await addDoc(collection(db, "memories"), {
-      title: document.getElementById('memTitle').value,
-      label: document.getElementById('memLabel').value,
-      msg: document.getElementById('memMsg').value,
-      url: url,
-      createdAt: serverTimestamp()
+        if (userEmail === myEmail) {
+          document.getElementById('loginBox').style.display = 'none';
+          document.getElementById('uploadBox').style.display = 'block';
+          document.getElementById('logoutBtn').style.display = 'inline-block';
+          document.getElementById('statusText').innerText = "Welcome back!";
+        } else {
+          document.getElementById('statusText').innerText = "Logged in, but email does not match Admin Email in code.";
+        }
+      } catch (err) {
+        document.getElementById('statusText').innerText = "Auth Error: " + err.message;
+      }
     });
-    
-    document.getElementById('statusText').innerText = "Done!";
+
+    document.getElementById('doUploadBtn').onclick = async () => {
+      const status = document.getElementById('statusText');
+      try {
+        const file = document.getElementById('memFile').files[0];
+        if(!file) return alert("Select a photo!");
+        
+        status.innerText = "Uploading photo...";
+        const fileRef = ref(storage, 'memories/' + Date.now());
+        await uploadBytes(fileRef, file);
+        
+        status.innerText = "Saving to database...";
+        const url = await getDownloadURL(fileRef);
+
+        await addDoc(collection(db, "memories"), {
+          title: document.getElementById('memTitle').value,
+          label: document.getElementById('memLabel').value,
+          msg: document.getElementById('memMsg').value,
+          url: url,
+          createdAt: serverTimestamp()
+        });
+        
+        status.innerText = "Upload Complete!";
+      } catch (e) {
+        status.innerText = "Upload Error: " + e.message;
+      }
+    };
+
+    onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc")), (snapshot) => {
+      const grid = document.getElementById('memoriesGrid');
+      grid.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        grid.innerHTML += `
+          <article class="memory">
+            <img src="${data.url}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2;">
+            <div class="memory-badge">♡</div>
+            <div style="position:relative; z-index:2; color:white; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
+              <span>${data.label}</span>
+              <strong>${data.title}</strong>
+            </div>
+          </article>
+        `;
+      });
+    }, (err) => console.log("Database empty or not ready yet."));
+  } catch (globalErr) {
+    document.getElementById('statusText').innerText = "Setup Error: " + globalErr.message;
+  }
+</script><!-- FIREBASE UPLOAD SCRIPT -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAs8HG5DgzQnDl9tvgqhgfn3di6JEg-z7E",
+    authDomain: "for-rina.firebaseapp.com",
+    projectId: "for-rina",
+    storageBucket: "for-rina.firebasestorage.app",
+    messagingSenderId: "842717774514",
+    appId: "1:842717774514:web:67c5c5cec445c8953dffab"
   };
 
-  onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc")), (snapshot) => {
-    const grid = document.getElementById('memoriesGrid');
-    grid.innerHTML = "";
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      grid.innerHTML += `
-        <article class="memory">
-          <img src="${data.url}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2;">
-          <div class="memory-badge">♡</div>
-          <div style="position:relative; z-index:2; color:white; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
-            <span>${data.label}</span>
-            <strong>${data.title}</strong>
-          </div>
-        </article>
-      `;
+  // ⚠️ CHANGE THIS TO THE EMAIL YOU SET UP IN FIREBASE
+  const ADMIN_EMAIL = "rina@gmail.com"; 
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    document.getElementById('adminLoginToggle').onclick = () => {
+      const p = document.getElementById('adminPanel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    };
+
+    document.getElementById('doLoginBtn').onclick = async () => {
+      const status = document.getElementById('statusText');
+      try { 
+        status.innerText = "Connecting...";
+        const email = document.getElementById('adminEmail').value.trim();
+        const pass = document.getElementById('adminPass').value;
+        await signInWithEmailAndPassword(auth, email, pass); 
+        status.innerText = "Login successful! Loading panel...";
+      } 
+      catch (e) { 
+        status.innerText = "Error: " + e.message; 
+      }
+    };
+
+    document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+    onAuthStateChanged(auth, (user) => {
+      try {
+        if (!user) {
+          document.getElementById('loginBox').style.display = 'block';
+          document.getElementById('uploadBox').style.display = 'none';
+          document.getElementById('logoutBtn').style.display = 'none';
+          return;
+        }
+        
+        // Safety check to prevent crashing if email is typed weirdly
+        const myEmail = ADMIN_EMAIL ? ADMIN_EMAIL.toLowerCase().trim() : "";
+        const userEmail = user.email ? user.email.toLowerCase().trim() : "";
+
+        if (userEmail === myEmail) {
+          document.getElementById('loginBox').style.display = 'none';
+          document.getElementById('uploadBox').style.display = 'block';
+          document.getElementById('logoutBtn').style.display = 'inline-block';
+          document.getElementById('statusText').innerText = "Welcome back!";
+        } else {
+          document.getElementById('statusText').innerText = "Logged in, but email does not match Admin Email in code.";
+        }
+      } catch (err) {
+        document.getElementById('statusText').innerText = "Auth Error: " + err.message;
+      }
     });
-  });
-</script>
+
+    document.getElementById('doUploadBtn').onclick = async () => {
+      const status = document.getElementById('statusText');
+      try {
+        const file = document.getElementById('memFile').files[0];
+        if(!file) return alert("Select a photo!");
+        
+        status.innerText = "Uploading photo...";
+        const fileRef = ref(storage, 'memories/' + Date.now());
+        await uploadBytes(fileRef, file);
+        
+        status.innerText = "Saving to database...";
+        const url = await getDownloadURL(fileRef);
+
+        await addDoc(collection(db, "memories"), {
+          title: document.getElementById('memTitle').value,
+          label: document.getElementById('memLabel').value,
+          msg: document.getElementById('memMsg').value,
+          url: url,
+          createdAt: serverTimestamp()
+        });
+        
+        status.innerText = "Upload Complete!";
+      } catch (e) {
+        status.innerText = "Upload Error: " + e.message;
+      }
+    };
+
+    onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc")), (snapshot) => {
+      const grid = document.getElementById('memoriesGrid');
+      grid.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        grid.innerHTML += `
+          <article class="memory">
+            <img src="${data.url}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2;">
+            <div class="memory-badge">♡</div>
+            <div style="position:relative; z-index:2; color:white; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
+              <span>${data.label}</span>
+              <strong>${data.title}</strong>
+            </div>
+          </article>
+        `;
+      });
+    }, (err) => console.log("Database empty or not ready yet."));
+  } catch (globalErr) {
+    document.getElementById('statusText').innerText = "Setup Error: " + globalErr.message;
+  }
+    </script>
 </body>
 </html>
  
