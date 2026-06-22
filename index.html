@@ -1,3 +1,4 @@
+ 
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>For Rina</title>
   <meta name="description" content="A soft, romantic, interactive love letter website for Rina from Azaan" />
+  <meta name="color-scheme" content="light" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -173,10 +175,6 @@
       z-index:1;
     }
 
-    .locked body{
-      overflow:hidden;
-    }
-
     .lock-screen{
       min-height:100vh;
       display:grid;
@@ -263,6 +261,7 @@
     .notes-grid p,
     .big-band p,
     .mini-game-shell p,
+    .spotify-copy p,
     .modal-content p{
       color:var(--muted);
       line-height:1.85;
@@ -616,7 +615,8 @@
     .notes-grid article,
     .big-band,
     .mini-game-shell,
-    .promise-band{
+    .promise-band,
+    .spotify-shell{
       background:var(--white-glass);
       border:1px solid var(--line);
       border-radius:var(--radius);
@@ -961,7 +961,8 @@
     }
 
     .big-band h3,
-    .promise-band h3{
+    .promise-band h3,
+    .spotify-copy h3{
       font-size:clamp(2rem, 4vw, 3rem);
       margin-bottom:.35rem;
     }
@@ -1051,6 +1052,97 @@
       color:var(--muted);
       line-height:1.65;
       font-size:.95rem;
+    }
+
+    .spotify-shell{
+      margin-top:1.3rem;
+      padding:1.2rem;
+      display:grid;
+      grid-template-columns:.95fr 1.05fr;
+      gap:1.2rem;
+      align-items:center;
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(135deg, rgba(255,191,209,.18), rgba(255,255,255,.48)),
+        rgba(255,255,255,.4);
+    }
+
+    .spotify-shell::before{
+      content:"";
+      position:absolute;
+      width:220px;
+      height:220px;
+      right:-60px;
+      top:-70px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,191,209,.22), transparent 68%);
+      pointer-events:none;
+    }
+
+    .spotify-copy{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:.9rem;
+      padding:.3rem;
+    }
+
+    .spotify-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      width:max-content;
+      padding:.55rem .95rem;
+      border-radius:999px;
+      background:rgba(255,255,255,.62);
+      border:1px solid var(--line);
+      color:var(--pink-deep);
+      font-size:.82rem;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .spotify-note{
+      border-radius:22px;
+      padding:1rem;
+      background:rgba(255,255,255,.56);
+      border:1px solid var(--line);
+      font-weight:800;
+      color:var(--ink);
+      line-height:1.7;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .spotify-note::before{
+      content:"♫";
+      position:absolute;
+      right:16px;
+      top:8px;
+      font-size:2rem;
+      color:rgba(242,139,173,.25);
+      font-family:"Baloo 2", cursive;
+    }
+
+    .spotify-frame-wrap{
+      position:relative;
+      z-index:1;
+      padding:.5rem;
+      border-radius:28px;
+      background:linear-gradient(135deg, rgba(255,255,255,.7), rgba(255,240,246,.72));
+      border:1px solid var(--line);
+      box-shadow:0 18px 34px rgba(143,93,111,.08);
+    }
+
+    .spotify-frame{
+      width:100%;
+      height:352px;
+      border:0;
+      border-radius:22px;
+      display:block;
+      background:#fff;
     }
 
     .footer{
@@ -1151,7 +1243,8 @@
       .letter-layout,
       .notes-grid,
       .big-band,
-      .interactive-grid{
+      .interactive-grid,
+      .spotify-shell{
         grid-template-columns:1fr;
       }
 
@@ -1219,6 +1312,33 @@
       .lock-card{
         padding:1.15rem;
       }
+
+      .spotify-frame{
+        height:380px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body, html {
+        background: var(--bg) !important;
+        color: var(--ink) !important;
+      }
+
+      input, textarea, select, button {
+        background: #fff !important;
+        color: var(--ink) !important;
+        border-color: var(--line) !important;
+      }
+
+      .lock-card,
+      .site,
+      header,
+      main,
+      footer,
+      .modal-card {
+        background: var(--white-strong) !important;
+        color: var(--ink) !important;
+      }
     }
   </style>
 </head>
@@ -1250,9 +1370,9 @@
         <div class="lock-top">
           <div class="lock-badge">❤</div>
           <div class="eyebrow">For Rina</div>
-          <h1 class="lock-title">Unlock my letter to you</h1>
+          <h1 class="lock-title">Unlock my letter to you.</h1>
           <p class="lock-text">
-            Enter our anniversary date to enter. (This is to keep anyone thats not you out).
+            Enter our anniversary date to unlock. (This is to keep anyone thats not you out).
           </p>
 
           <form class="lock-form" id="lockForm">
@@ -1269,7 +1389,7 @@
               />
               <div class="helper" id="lockHint" style="visibility:hidden;">&nbsp;</div>
             </div>
-            <button class="btn btn-primary" type="submit">Unlock for Rina</button>
+            <button class="btn btn-primary" type="submit">Unlock letter</button>
             <div class="lock-error" id="lockError">That is not it yet. Try again.</div>
           </form>
         </div>
@@ -1287,6 +1407,7 @@
           <nav class="nav-links" aria-label="Primary">
             <a href="#letter">Letter</a>
             <a href="#memories">Memories</a>
+            <a href="#music">Playlist</a>
             <a href="#interactive">Cute Stuff</a>
             <a href="#reasons">Reasons</a>
           </nav>
@@ -1298,9 +1419,9 @@
           <div class="wrap hero-grid">
             <div class="hero-copy stagger">
               <div class="eyebrow">Made with love by Azaan</div>
-              <h1>For the cutest girl.</h1>
+              <h1>For the prettiest girl in the world.</h1>
               <p class="lead">
-                Rina, I wanted to make something special for you cuz you've done so much for me and i wanna repay you for everything you done and show you how much i apreciate you, you mean so much to me.
+                Rina, I wanted to make special for you and a way of expressing my feelings towards you and my gratitude, you mean the world to me.
               </p>
               <div class="hero-actions">
                 <a class="btn btn-primary" href="#letter">Open your letter</a>
@@ -1418,9 +1539,47 @@
                 <div class="memory-badge">☁</div>
                 <div>
                   <span>My favorite comfort</span>
-                  <strong>Talking with you will always be my greatest comfort</strong>
+                  <strong>Talking with you will always be my greatest comfort.</strong>
                 </div>
               </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="music" class="reveal">
+          <div class="wrap">
+            <div class="section-head">
+              <div>
+                <div class="kicker">Our soundtrack</div>
+                <h2>A playlist I made just for you.</h2>
+              </div>
+              <p class="lead" style="margin:0;max-width:42ch;">
+                A little collection of songs that remind me of you, us, and all the soft feelings I never get tired of having for you.
+              </p>
+            </div>
+
+            <div class="spotify-shell">
+              <div class="spotify-copy">
+                <div class="spotify-pill">♫ Spotify love mix</div>
+                <h3>Your songs, your vibe, your little place in my heart.</h3>
+                <p>
+                  I wanted to give you something you could listen to whenever you miss me, think of us, or just want a soundtrack for your day. Every song in here was picked with you in mind.
+                </p>
+                <div class="spotify-note">
+                  Press play whenever you want a tiny reminder that you are loved very, very much.
+                </div>
+              </div>
+
+              <div class="spotify-frame-wrap">
+                <iframe
+                  class="spotify-frame"
+                  src="https://open.spotify.com/embed/playlist/3HEz56O2Q6WP2c8VXgUq6h?utm_source=generator&theme=0"
+                  allowfullscreen=""
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  title="Spotify playlist for Rina">
+                </iframe>
+              </div>
             </div>
           </div>
         </section>
@@ -1433,7 +1592,7 @@
                 <h2>Little interactive things for you.</h2>
               </div>
               <p class="lead" style="margin:0;max-width:40ch;">
-                I wanted to add cute stuff for you, so I added a few surprises.
+                I wanted this to be as cute as you are, so I added a few little surprises.
               </p>
             </div>
 
@@ -1458,7 +1617,7 @@
                 </p>
 
                 <div class="bubble" id="complimentBubble">
-                  Rina, your smile makes everything feel softer.
+                  Rina, your smile brightens up my entire day.
                 </div>
 
                 <div class="mini-actions">
@@ -1498,7 +1657,7 @@
                 <p>
                   I love that we can share everything openly and be fully ourselves with each other. That comfort is rare, and it makes what we have feel so real and so special to me.
                 </p>
-                <div class="quote-box">Being with you is the best thing that has ever happened to me</div>
+                <div class="quote-box">Being with you is the best thing to ever happen in my life</div>
               </article>
             </div>
 
@@ -1507,7 +1666,7 @@
                 <div class="kicker">One more thing</div>
                 <h3>You are truly one of a kind.</h3>
                 <p>
-                  I love how unique your interests are and how different you are from anyone else I have ever met, I know how other people might feel about you but please don't let that stop you from being yourself I love those things about you and I can never talk about it enough.
+                  I love how unique your interests are and how different you are from anyone else I have ever met, even if other people might see you in a bad light, I'll always see you as my sweet little angel.
                 </p>
               </div>
 
@@ -1777,7 +1936,8 @@
         e.target.closest("a") ||
         e.target.closest(".memory") ||
         e.target.closest(".modal-card") ||
-        e.target.closest(".lock-card")
+        e.target.closest(".lock-card") ||
+        e.target.closest("iframe")
       ) return;
       burstAt(e.clientX, e.clientY, 5);
     });
