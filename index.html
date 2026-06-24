@@ -1421,7 +1421,7 @@
               <div class="eyebrow">Made with love by Azaan</div>
               <h1>For the prettiest girl in the world.</h1>
               <p class="lead">
-                Rina, I wanted to make this special for you and a way of expressing my feelings towards you and my gratitude, you mean the world to me.
+                Rina, I wanted to make special for you and a way of expressing my feelings towards you and my gratitude, you mean the world to me.
               </p>
               <div class="hero-actions">
                 <a class="btn btn-primary" href="#letter">Open your letter</a>
@@ -1979,7 +1979,6 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAs8HG5DgzQnDl9tvgqhgfn3di6JEg-z7E",
@@ -1992,6 +1991,8 @@
 
   // ⚠️ CHANGE THIS TO THE EMAIL YOU SET UP IN FIREBASE
   const ADMIN_EMAIL = "rina@gmail.com";
+  const CLOUDINARY_CLOUD  = "uq509zbg";
+  const CLOUDINARY_PRESET = "For rina";
 
   function escapeHtml(str) {
     return String(str || "")
@@ -2006,8 +2007,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
-
     document.getElementById('adminLoginToggle').onclick = () => {
       const p = document.getElementById('adminPanel');
       p.style.display = p.style.display === 'none' ? 'block' : 'none';
@@ -2059,13 +2058,33 @@
         const file = document.getElementById('memFile').files[0];
         if (!file) return alert("Select a photo!");
 
+        if (file.size > 10 * 1024 * 1024) {
+          status.innerText = "File is over 10 MB — please pick a smaller photo.";
+          return;
+        }
+
+        // Upload to Cloudinary via unsigned preset (no Firebase Storage needed)
         status.innerText = "Uploading photo...";
-        const fileRef = ref(storage, 'memories/' + Date.now());
-        await uploadBytes(fileRef, file);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", CLOUDINARY_PRESET);
 
+        const cloudRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,
+          { method: "POST", body: formData }
+        );
+
+        if (!cloudRes.ok) {
+          const errData = await cloudRes.json().catch(() => ({}));
+          throw new Error(errData.error?.message || "Cloudinary upload failed (" + cloudRes.status + ")");
+        }
+
+        const cloudJson = await cloudRes.json();
+        const url = cloudJson.secure_url;
+        if (!url) throw new Error("No URL returned from Cloudinary.");
+
+        // Save metadata + Cloudinary URL to Firestore
         status.innerText = "Saving to database...";
-        const url = await getDownloadURL(fileRef);
-
         await addDoc(collection(db, "memories"), {
           title: document.getElementById('memTitle').value,
           label: document.getElementById('memLabel').value,
@@ -2074,13 +2093,13 @@
           createdAt: serverTimestamp()
         });
 
-        status.innerText = "Upload Complete!";
+        status.innerText = "Upload Complete! ♡";
         document.getElementById('memTitle').value = "";
         document.getElementById('memLabel').value = "";
         document.getElementById('memMsg').value = "";
         document.getElementById('memFile').value = "";
       } catch (e) {
-        status.innerText = "Upload Error: " + e.message;
+        status.innerText = "Error: " + (e.message || "Unknown error");
       }
     };
 
