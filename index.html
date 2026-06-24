@@ -911,6 +911,7 @@
       color:var(--ink);
       position:relative;
       overflow:hidden;
+      transition:opacity .14s ease, transform .14s ease;
     }
 
     .bubble::before{
@@ -932,7 +933,6 @@
     }
 
     .pill{
-      border:none;
       cursor:pointer;
       min-height:46px;
       padding:0 1rem;
@@ -1421,7 +1421,7 @@
               <div class="eyebrow">Made with love by Azaan</div>
               <h1>For the prettiest girl in the world.</h1>
               <p class="lead">
-                Rina, I wanted to make special for you and a way of expressing my feelings towards you and my gratitude, you mean the world to me.
+                Rina, I wanted to make this special for you and a way of expressing my feelings towards you and my gratitude, you mean the world to me.
               </p>
               <div class="hero-actions">
                 <a class="btn btn-primary" href="#letter">Open your letter</a>
@@ -1543,40 +1543,37 @@
                 </div>
               </article>
             </div>
+
+            <div class="section-head" style="margin-top:2.5rem;">
+              <div>
+                <div class="kicker">Our pictures</div>
+                <h2>Cute pics to remind us how much we mean to each other.</h2>
+              </div>
+              <div style="display:flex;gap:.8rem;align-items:center;">
+                <button id="adminLoginToggle" style="background:none;border:none;color:#846a76;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.95rem;">Admin</button>
+                <button class="btn btn-secondary" id="logoutBtn" style="display:none;">Logout</button>
+              </div>
+            </div>
+
+            <div id="adminPanel" style="background:rgba(255,255,255,0.9);border-radius:20px;padding:20px;margin-bottom:20px;display:none;">
+              <div id="loginBox">
+                <input type="email" id="adminEmail" placeholder="Admin Email" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;">
+                <input type="password" id="adminPass" placeholder="Password" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;">
+                <button id="doLoginBtn" style="padding:10px 20px;background:#f28bad;color:white;border:none;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;">Sign In</button>
+              </div>
+              <div id="uploadBox" style="display:none;">
+                <input type="text" id="memTitle" placeholder="Title (e.g. Movie Night)" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;">
+                <input type="text" id="memLabel" placeholder="Label (e.g. Our Fun)" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;">
+                <textarea id="memMsg" placeholder="Message..." style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;resize:vertical;"></textarea>
+                <input type="file" id="memFile" accept="image/*" style="margin-bottom:10px;display:block;">
+                <button id="doUploadBtn" style="padding:10px 20px;background:#f28bad;color:white;border:none;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;">Post Memory</button>
+              </div>
+              <div id="statusText" style="color:#f28bad;margin-top:10px;font-family:'Nunito',sans-serif;font-weight:700;"></div>
+            </div>
+
+            <div class="memory-strip" id="memoriesGrid"></div>
           </div>
-          <!-- NEW ADMIN MEMORIES SECTION -->
-<section id="memories" class="reveal">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <div class="kicker">Our pictues</div>
-        <h2>Cute pics to remind us how much we mean to each other.</h2>
-      </div>
-      <button id="adminLoginToggle" style="background:none; border:none; color:#846a76; font-weight:800; cursor:pointer;">Admin</button>
-      <button class="btn btn-secondary" id="logoutBtn" style="display:none;">Logout</button>
-    </div>
-
-    <!-- ADMIN PANEL -->
-    <div id="adminPanel" style="background:rgba(255,255,255,0.9); border-radius:20px; padding:20px; margin-bottom:20px; display:none;">
-      <div id="loginBox">
-        <input type="email" id="adminEmail" placeholder="Admin Email" style="width:100%; padding:10px; margin-bottom:10px;">
-        <input type="password" id="adminPass" placeholder="Password" style="width:100%; padding:10px; margin-bottom:10px;">
-        <button id="doLoginBtn" style="padding:10px 20px; background:#f28bad; color:white; border:none; border-radius:10px;">Sign In</button>
-      </div>
-      <div id="uploadBox" style="display:none;">
-        <input type="text" id="memTitle" placeholder="Title (e.g. Movie Night)" style="width:100%; padding:10px; margin-bottom:10px;">
-        <input type="text" id="memLabel" placeholder="Label (e.g. Our Fun)" style="width:100%; padding:10px; margin-bottom:10px;">
-        <textarea id="memMsg" placeholder="Message..." style="width:100%; padding:10px; margin-bottom:10px;"></textarea>
-        <input type="file" id="memFile" accept="image/*" style="margin-bottom:10px;">
-        <button id="doUploadBtn" style="padding:10px 20px; background:#f28bad; color:white; border:none; border-radius:10px;">Post Memory</button>
-      </div>
-      <div id="statusText" style="color:#f28bad; margin-top:10px;"></div>
-    </div>
-
-    <!-- WHERE IMAGES WILL SHOW UP -->
-    <div class="memory-strip" id="memoriesGrid"></div>
-  </div>
-</section>
+        </section>
 
         <section id="music" class="reveal">
           <div class="wrap">
@@ -1976,7 +1973,8 @@
 
     anniversaryInput.focus();
   </script>
-  <!-- FIREBASE UPLOAD SCRIPT -->
+
+  <!-- Firebase: admin panel, photo upload, and gallery -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1993,7 +1991,16 @@
   };
 
   // ⚠️ CHANGE THIS TO THE EMAIL YOU SET UP IN FIREBASE
-  const ADMIN_EMAIL = "you@example.com"; 
+  const ADMIN_EMAIL = "rina@gmail.com";
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
 
   try {
     const app = initializeApp(firebaseConfig);
@@ -2008,15 +2015,14 @@
 
     document.getElementById('doLoginBtn').onclick = async () => {
       const status = document.getElementById('statusText');
-      try { 
+      try {
         status.innerText = "Connecting...";
         const email = document.getElementById('adminEmail').value.trim();
         const pass = document.getElementById('adminPass').value;
-        await signInWithEmailAndPassword(auth, email, pass); 
+        await signInWithEmailAndPassword(auth, email, pass);
         status.innerText = "Login successful! Loading panel...";
-      } 
-      catch (e) { 
-        status.innerText = "Error: " + e.message; 
+      } catch (e) {
+        status.innerText = "Error: " + e.message;
       }
     };
 
@@ -2030,8 +2036,7 @@
           document.getElementById('logoutBtn').style.display = 'none';
           return;
         }
-        
-        // Safety check to prevent crashing if email is typed weirdly
+
         const myEmail = ADMIN_EMAIL ? ADMIN_EMAIL.toLowerCase().trim() : "";
         const userEmail = user.email ? user.email.toLowerCase().trim() : "";
 
@@ -2052,12 +2057,12 @@
       const status = document.getElementById('statusText');
       try {
         const file = document.getElementById('memFile').files[0];
-        if(!file) return alert("Select a photo!");
-        
+        if (!file) return alert("Select a photo!");
+
         status.innerText = "Uploading photo...";
         const fileRef = ref(storage, 'memories/' + Date.now());
         await uploadBytes(fileRef, file);
-        
+
         status.innerText = "Saving to database...";
         const url = await getDownloadURL(fileRef);
 
@@ -2068,153 +2073,45 @@
           url: url,
           createdAt: serverTimestamp()
         });
-        
+
         status.innerText = "Upload Complete!";
+        document.getElementById('memTitle').value = "";
+        document.getElementById('memLabel').value = "";
+        document.getElementById('memMsg').value = "";
+        document.getElementById('memFile').value = "";
       } catch (e) {
         status.innerText = "Upload Error: " + e.message;
       }
     };
 
-    onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc")), (snapshot) => {
-      const grid = document.getElementById('memoriesGrid');
-      grid.innerHTML = "";
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        grid.innerHTML += `
-          <article class="memory">
-            <img src="${data.url}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2;">
-            <div class="memory-badge">♡</div>
-            <div style="position:relative; z-index:2; color:white; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
-              <span>${data.label}</span>
-              <strong>${data.title}</strong>
-            </div>
-          </article>
-        `;
-      });
-    }, (err) => console.log("Database empty or not ready yet."));
-  } catch (globalErr) {
-    document.getElementById('statusText').innerText = "Setup Error: " + globalErr.message;
-  }
-</script><!-- FIREBASE UPLOAD SCRIPT -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAs8HG5DgzQnDl9tvgqhgfn3di6JEg-z7E",
-    authDomain: "for-rina.firebaseapp.com",
-    projectId: "for-rina",
-    storageBucket: "for-rina.firebasestorage.app",
-    messagingSenderId: "842717774514",
-    appId: "1:842717774514:web:67c5c5cec445c8953dffab"
-  };
-
-  // ⚠️ CHANGE THIS TO THE EMAIL YOU SET UP IN FIREBASE
-  const ADMIN_EMAIL = "rina@gmail.com"; 
-
-  try {
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    document.getElementById('adminLoginToggle').onclick = () => {
-      const p = document.getElementById('adminPanel');
-      p.style.display = p.style.display === 'none' ? 'block' : 'none';
-    };
-
-    document.getElementById('doLoginBtn').onclick = async () => {
-      const status = document.getElementById('statusText');
-      try { 
-        status.innerText = "Connecting...";
-        const email = document.getElementById('adminEmail').value.trim();
-        const pass = document.getElementById('adminPass').value;
-        await signInWithEmailAndPassword(auth, email, pass); 
-        status.innerText = "Login successful! Loading panel...";
-      } 
-      catch (e) { 
-        status.innerText = "Error: " + e.message; 
-      }
-    };
-
-    document.getElementById('logoutBtn').onclick = () => signOut(auth);
-
-    onAuthStateChanged(auth, (user) => {
-      try {
-        if (!user) {
-          document.getElementById('loginBox').style.display = 'block';
-          document.getElementById('uploadBox').style.display = 'none';
-          document.getElementById('logoutBtn').style.display = 'none';
-          return;
-        }
-        
-        // Safety check to prevent crashing if email is typed weirdly
-        const myEmail = ADMIN_EMAIL ? ADMIN_EMAIL.toLowerCase().trim() : "";
-        const userEmail = user.email ? user.email.toLowerCase().trim() : "";
-
-        if (userEmail === myEmail) {
-          document.getElementById('loginBox').style.display = 'none';
-          document.getElementById('uploadBox').style.display = 'block';
-          document.getElementById('logoutBtn').style.display = 'inline-block';
-          document.getElementById('statusText').innerText = "Welcome back!";
-        } else {
-          document.getElementById('statusText').innerText = "Logged in, but email does not match Admin Email in code.";
-        }
-      } catch (err) {
-        document.getElementById('statusText').innerText = "Auth Error: " + err.message;
-      }
-    });
-
-    document.getElementById('doUploadBtn').onclick = async () => {
-      const status = document.getElementById('statusText');
-      try {
-        const file = document.getElementById('memFile').files[0];
-        if(!file) return alert("Select a photo!");
-        
-        status.innerText = "Uploading photo...";
-        const fileRef = ref(storage, 'memories/' + Date.now());
-        await uploadBytes(fileRef, file);
-        
-        status.innerText = "Saving to database...";
-        const url = await getDownloadURL(fileRef);
-
-        await addDoc(collection(db, "memories"), {
-          title: document.getElementById('memTitle').value,
-          label: document.getElementById('memLabel').value,
-          msg: document.getElementById('memMsg').value,
-          url: url,
-          createdAt: serverTimestamp()
+    onSnapshot(
+      query(collection(db, "memories"), orderBy("createdAt", "desc")),
+      (snapshot) => {
+        const grid = document.getElementById('memoriesGrid');
+        let html = "";
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          const safeUrl   = escapeHtml(data.url);
+          const safeLabel = escapeHtml(data.label);
+          const safeTitle = escapeHtml(data.title);
+          html += `
+            <article class="memory">
+              <img src="${safeUrl}" alt="${safeTitle}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;">
+              <div class="memory-badge">♡</div>
+              <div style="position:relative;z-index:2;color:white;text-shadow:1px 1px 4px rgba(0,0,0,0.8);">
+                <span>${safeLabel}</span>
+                <strong>${safeTitle}</strong>
+              </div>
+            </article>
+          `;
         });
-        
-        status.innerText = "Upload Complete!";
-      } catch (e) {
-        status.innerText = "Upload Error: " + e.message;
-      }
-    };
-
-    onSnapshot(query(collection(db, "memories"), orderBy("createdAt", "desc")), (snapshot) => {
-      const grid = document.getElementById('memoriesGrid');
-      grid.innerHTML = "";
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        grid.innerHTML += `
-          <article class="memory">
-            <img src="${data.url}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:-2;">
-            <div class="memory-badge">♡</div>
-            <div style="position:relative; z-index:2; color:white; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);">
-              <span>${data.label}</span>
-              <strong>${data.title}</strong>
-            </div>
-          </article>
-        `;
-      });
-    }, (err) => console.log("Database empty or not ready yet."));
+        grid.innerHTML = html;
+      },
+      (err) => console.log("Gallery not ready yet:", err.message)
+    );
   } catch (globalErr) {
     document.getElementById('statusText').innerText = "Setup Error: " + globalErr.message;
   }
-    </script>
+</script>
 </body>
 </html>
- 
