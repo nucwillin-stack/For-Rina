@@ -1569,6 +1569,15 @@
                 <button id="doUploadBtn" style="padding:10px 20px;background:#f28bad;color:white;border:none;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;">Post Memory</button>
               </div>
               <div id="statusText" style="color:#f28bad;margin-top:10px;font-family:'Nunito',sans-serif;font-weight:700;"></div>
+              <div id="progressWrap" style="display:none;margin-top:14px;">
+                <div style="background:#f0e6eb;border-radius:999px;height:10px;overflow:hidden;">
+                  <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#f28bad,#e89ab5);border-radius:999px;transition:width .25s ease;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                  <span id="progressLabel" style="font-size:.82rem;color:#846a76;font-family:'Nunito',sans-serif;font-weight:800;">0%</span>
+                  <span id="progressStep" style="font-size:.82rem;color:#846a76;font-family:'Nunito',sans-serif;">Starting...</span>
+                </div>
+              </div>
             </div>
 
             <div class="memory-strip" id="memoriesGrid"></div>
@@ -2043,7 +2052,6 @@
           document.getElementById('loginBox').style.display = 'none';
           document.getElementById('uploadBox').style.display = 'block';
           document.getElementById('logoutBtn').style.display = 'inline-block';
-          document.getElementById('statusText').innerText = "Welcome back!";
         } else {
           document.getElementById('statusText').innerText = "Logged in, but email does not match Admin Email in code.";
         }
@@ -2053,7 +2061,20 @@
     });
 
     document.getElementById('doUploadBtn').onclick = async () => {
-      const status = document.getElementById('statusText');
+      const status      = document.getElementById('statusText');
+      const pWrap       = document.getElementById('progressWrap');
+      const pBar        = document.getElementById('progressBar');
+      const pLabel      = document.getElementById('progressLabel');
+      const pStep       = document.getElementById('progressStep');
+
+      const showProgress = () => { pWrap.style.display = 'block'; };
+      const hideProgress = () => { pWrap.style.display = 'none'; };
+      const setProgress  = (pct, step) => {
+        pBar.style.width  = pct + '%';
+        pLabel.innerText  = pct + '%';
+        if (step) pStep.innerText = step;
+      };
+
       try {
         const file = document.getElementById('memFile').files[0];
         if (!file) return alert("Select a photo!");
@@ -2063,43 +2084,101 @@
           return;
         }
 
-        // Upload to Cloudinary via unsigned preset (no Firebase Storage needed)
-        status.innerText = "Uploading photo...";
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", CLOUDINARY_PRESET);
+        // Reset and show progress bar
+        pBar.style.background = 'linear-gradient(90deg,#f28bad,#e89ab5)';
+        setProgress(0, 'Preparing upload...');
+        showProgress();
+        status.innerText = '';
 
-        const cloudRes = await fetch(
-          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,
-          { method: "POST", body: formData }
-        );
+        // ── Cloudinary upload via XHR (only XHR supports upload progress) ──
+        const cloudinaryUrl = await new Promise((resolve, reject) => {
+          const xhr      = new XMLHttpRequest();
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', CLOUDINARY_PRESET);
 
-        if (!cloudRes.ok) {
-          const errData = await cloudRes.json().catch(() => ({}));
-          throw new Error(errData.error?.message || "Cloudinary upload failed (" + cloudRes.status + ")");
-        }
+          // Stuck detector: warn if no progress for 20 seconds
+          let stuckTimer = null;
+          const resetStuck = () => {
+            clearTimeout(stuckTimer);
+            stuckTimer = setTimeout(() => {
+              pStep.innerText = '⚠️ Seems stuck — check your connection';
+              pStep.style.color = '#e07a5f';
+            }, 20000);
+          };
+          resetStuck();
 
-        const cloudJson = await cloudRes.json();
-        const url = cloudJson.secure_url;
-        if (!url) throw new Error("No URL returned from Cloudinary.");
+          xhr.upload.onprogress = (e) => {
+            resetStuck();
+            if (e.lengthComputable) {
+              const pct = Math.round((e.loaded / e.total) * 100);
+              setProgress(pct, 'Uploading photo... ' + pct + '%');
+            }
+          };
 
-        // Save metadata + Cloudinary URL to Firestore
-        status.innerText = "Saving to database...";
-        await addDoc(collection(db, "memories"), {
-          title: document.getElementById('memTitle').value,
-          label: document.getElementById('memLabel').value,
-          msg: document.getElementById('memMsg').value,
-          url: url,
-          createdAt: serverTimestamp()
+          xhr.onload = () => {
+            clearTimeout(stuckTimer);
+            if (xhr.status === 200) {
+              try {
+                const data = JSON.parse(xhr.responseText);
+                if (data.secure_url) resolve(data.secure_url);
+                else reject(new Error(data.error?.message || 'No URL returned from Cloudinary.'));
+              } catch { reject(new Error('Invalid response from Cloudinary.')); }
+            } else {
+              try {
+                const err = JSON.parse(xhr.responseText);
+                reject(new Error(err.error?.message || 'Cloudinary upload failed (' + xhr.status + ')'));
+              } catch { reject(new Error('Cloudinary upload failed (' + xhr.status + ')')); }
+            }
+          };
+
+          xhr.onerror   = () => { clearTimeout(stuckTimer); reject(new Error('Network error — check your connection.')); };
+          xhr.ontimeout = () => { clearTimeout(stuckTimer); reject(new Error('Upload timed out after 60 seconds.')); };
+          xhr.timeout   = 60000;
+
+          xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`);
+          xhr.send(formData);
         });
 
-        status.innerText = "Upload Complete! ♡";
-        document.getElementById('memTitle').value = "";
-        document.getElementById('memLabel').value = "";
-        document.getElementById('memMsg').value = "";
-        document.getElementById('memFile').value = "";
+        // ── Save metadata + URL to Firestore ──
+        setProgress(100, 'Saving to database...');
+        pStep.style.color = '#846a76';
+
+        await Promise.race([
+          addDoc(collection(db, 'memories'), {
+            title: document.getElementById('memTitle').value,
+            label: document.getElementById('memLabel').value,
+            msg:   document.getElementById('memMsg').value,
+            url:   cloudinaryUrl,
+            createdAt: serverTimestamp()
+          }),
+          new Promise((_, reject) => setTimeout(() =>
+            reject(new Error(
+              'Firestore write timed out. Go to Firebase Console → ' +
+              'Firestore Database → Rules and make sure: ' +
+              'allow write: if request.auth != null;'
+            )), 10000
+          ))
+        ]);
+
+        // ── Success ──
+        pBar.style.background = '#7ec8a0';
+        setProgress(100, 'Done! ♡');
+        status.innerText = 'Upload Complete! ♡';
+        setTimeout(hideProgress, 3000);
+
+        document.getElementById('memTitle').value = '';
+        document.getElementById('memLabel').value = '';
+        document.getElementById('memMsg').value   = '';
+        document.getElementById('memFile').value  = '';
+
       } catch (e) {
-        status.innerText = "Error: " + (e.message || "Unknown error");
+        hideProgress();
+        let msg = e.message || 'Unknown error';
+        if (msg.includes('PERMISSION_DENIED') || msg.includes('permission-denied')) {
+          msg = 'Firestore permission denied — go to Firebase Console → Firestore Database → Rules and allow authenticated writes.';
+        }
+        status.innerText = 'Error: ' + msg;
       }
     };
 
