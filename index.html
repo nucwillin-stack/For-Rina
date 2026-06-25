@@ -1987,7 +1987,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, enableIndexedDbPersistence, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAs8HG5DgzQnDl9tvgqhgfn3di6JEg-z7E",
@@ -2016,6 +2016,15 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
+    // Offline persistence: addDoc saves to local cache instantly,
+    // then syncs to Firebase in the background — no more long waits.
+    enableIndexedDbPersistence(db).catch(err => {
+      // failed-precondition = multiple tabs open (harmless)
+      // unimplemented = browser doesn't support it (harmless)
+      console.log("Persistence unavailable:", err.code);
+    });
+
     document.getElementById('adminLoginToggle').onclick = () => {
       const p = document.getElementById('adminPanel');
       p.style.display = p.style.display === 'none' ? 'block' : 'none';
@@ -2150,22 +2159,23 @@
         }
         await auth.currentUser.getIdToken(true);
 
-        await Promise.race([
-          addDoc(collection(db, 'memories'), {
+        // No hard timeout — just show a patience message if it takes a while.
+        // Firestore will complete eventually; a fake timeout causes false errors.
+        const patienceTimer = setTimeout(() => {
+          pStep.innerText = 'Almost there, still saving... ♡';
+        }, 8000);
+
+        try {
+          await addDoc(collection(db, 'memories'), {
             title: document.getElementById('memTitle').value,
             label: document.getElementById('memLabel').value,
             msg:   document.getElementById('memMsg').value,
             url:   cloudinaryUrl,
             createdAt: serverTimestamp()
-          }),
-          new Promise((_, reject) => setTimeout(() =>
-            reject(new Error(
-              'Firestore write timed out after 30 seconds. ' +
-              'Check your internet connection and make sure your Firestore rules allow: ' +
-              'allow write: if request.auth != null;'
-            )), 30000
-          ))
-        ]);
+          });
+        } finally {
+          clearTimeout(patienceTimer);
+        }
 
         // ── Success ──
         pBar.style.background = '#7ec8a0';
