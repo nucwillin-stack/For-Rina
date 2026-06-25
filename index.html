@@ -2144,6 +2144,12 @@
         setProgress(100, 'Saving to database...');
         pStep.style.color = '#846a76';
 
+        // Force-refresh the auth token before writing so it is never stale
+        if (!auth.currentUser) {
+          throw new Error('You are not logged in. Please sign in as admin and try again.');
+        }
+        await auth.currentUser.getIdToken(true);
+
         await Promise.race([
           addDoc(collection(db, 'memories'), {
             title: document.getElementById('memTitle').value,
@@ -2154,10 +2160,10 @@
           }),
           new Promise((_, reject) => setTimeout(() =>
             reject(new Error(
-              'Firestore write timed out. Go to Firebase Console → ' +
-              'Firestore Database → Rules and make sure: ' +
+              'Firestore write timed out after 30 seconds. ' +
+              'Check your internet connection and make sure your Firestore rules allow: ' +
               'allow write: if request.auth != null;'
-            )), 10000
+            )), 30000
           ))
         ]);
 
