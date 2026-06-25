@@ -1987,7 +1987,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, enableIndexedDbPersistence, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, enableMultiTabIndexedDbPersistence, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAs8HG5DgzQnDl9tvgqhgfn3di6JEg-z7E",
@@ -2017,12 +2017,12 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Offline persistence: addDoc saves to local cache instantly,
-    // then syncs to Firebase in the background — no more long waits.
-    enableIndexedDbPersistence(db).catch(err => {
-      // failed-precondition = multiple tabs open (harmless)
-      // unimplemented = browser doesn't support it (harmless)
-      console.log("Persistence unavailable:", err.code);
+    // Multi-tab offline persistence: works across all open tabs.
+    // addDoc saves to local IndexedDB instantly and syncs to Firebase
+    // in the background — no waiting for the server.
+    enableMultiTabIndexedDbPersistence(db).catch(err => {
+      // unimplemented = browser doesn't support IndexedDB (very rare)
+      console.log("Multi-tab persistence unavailable:", err.code);
     });
 
     document.getElementById('adminLoginToggle').onclick = () => {
@@ -2069,19 +2069,40 @@
       }
     });
 
-    document.getElementById('doUploadBtn').onclick = async () => {
-      const status      = document.getElementById('statusText');
-      const pWrap       = document.getElementById('progressWrap');
-      const pBar        = document.getElementById('progressBar');
-      const pLabel      = document.getElementById('progressLabel');
-      const pStep       = document.getElementById('progressStep');
+    // Compress image in-browser before uploading — reduces file size 5-10x
+    // with no visible quality loss at the card display size.
+    const compressImage = (file, maxPx = 1920, quality = 0.85) =>
+      new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > maxPx) { h = Math.round(h * maxPx / w); w = maxPx; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          canvas.toBlob(blob => resolve(blob || file), 'image/jpeg', quality);
+        };
+        img.onerror = () => resolve(file); // fall back to original if anything fails
+        img.src = URL.createObjectURL(file);
+      });
 
-      const showProgress = () => { pWrap.style.display = 'block'; };
-      const hideProgress = () => { pWrap.style.display = 'none'; };
-      const setProgress  = (pct, step) => {
-        pBar.style.width  = pct + '%';
-        pLabel.innerText  = pct + '%';
-        if (step) pStep.innerText = step;
+    document.getElementById('doUploadBtn').onclick = async () => {
+      const status = document.getElementById('statusText');
+      const pWrap  = document.getElementById('progressWrap');
+      const pBar   = document.getElementById('progressBar');
+      const pLabel = document.getElementById('progressLabel');
+      const pStep  = document.getElementById('progressStep');
+
+      // Unified 0-100% bar:
+      //   0  →  5%  compression
+      //   5  → 90%  Cloudinary upload  (XHR progress scaled into this range)
+      //  90  →100%  Firestore save
+      // 100%        = everything done, bar turns green
+      const setProgress = (pct, step) => {
+        const p = Math.min(100, Math.max(0, Math.round(pct)));
+        pBar.style.width = p + '%';
+        pLabel.innerText = p + '%';
+        if (step !== undefined) pStep.innerText = step;
       };
 
       try {
@@ -2093,20 +2114,24 @@
           return;
         }
 
-        // Reset and show progress bar
+        // Reset bar
         pBar.style.background = 'linear-gradient(90deg,#f28bad,#e89ab5)';
-        setProgress(0, 'Preparing upload...');
-        showProgress();
+        pStep.style.color = '#846a76';
         status.innerText = '';
+        setProgress(0, 'Compressing...');
+        pWrap.style.display = 'block';
 
-        // ── Cloudinary upload via XHR (only XHR supports upload progress) ──
+        // ── Stage 1: Compress (0 → 5%) ───────────────────────────────────────
+        const compressed = await compressImage(file);
+        setProgress(5, 'Uploading...');
+
+        // ── Stage 2: Cloudinary upload (5 → 90%) ─────────────────────────────
         const cloudinaryUrl = await new Promise((resolve, reject) => {
           const xhr      = new XMLHttpRequest();
           const formData = new FormData();
-          formData.append('file', file);
+          formData.append('file', compressed);
           formData.append('upload_preset', CLOUDINARY_PRESET);
 
-          // Stuck detector: warn if no progress for 20 seconds
           let stuckTimer = null;
           const resetStuck = () => {
             clearTimeout(stuckTimer);
@@ -2120,8 +2145,9 @@
           xhr.upload.onprogress = (e) => {
             resetStuck();
             if (e.lengthComputable) {
-              const pct = Math.round((e.loaded / e.total) * 100);
-              setProgress(pct, 'Uploading photo... ' + pct + '%');
+              // XHR 0-100 scaled into our 5-90 range
+              const scaled = 5 + (e.loaded / e.total) * 85;
+              setProgress(scaled, 'Uploading...');
             }
           };
 
@@ -2149,20 +2175,11 @@
           xhr.send(formData);
         });
 
-        // ── Save metadata + URL to Firestore ──
-        setProgress(100, 'Saving to database...');
-        pStep.style.color = '#846a76';
+        // ── Stage 3: Firestore save (90 → 100%) ──────────────────────────────
+        setProgress(90, 'Saving...');
 
-        // Force-refresh the auth token before writing so it is never stale
-        if (!auth.currentUser) {
-          throw new Error('You are not logged in. Please sign in as admin and try again.');
-        }
-        await auth.currentUser.getIdToken(true);
-
-        // No hard timeout — just show a patience message if it takes a while.
-        // Firestore will complete eventually; a fake timeout causes false errors.
         const patienceTimer = setTimeout(() => {
-          pStep.innerText = 'Almost there, still saving... ♡';
+          pStep.innerText = 'Almost there... ♡';
         }, 8000);
 
         try {
@@ -2177,11 +2194,12 @@
           clearTimeout(patienceTimer);
         }
 
-        // ── Success ──
+        // ── 100% = fully done ─────────────────────────────────────────────────
         pBar.style.background = '#7ec8a0';
+        pStep.style.color = '#846a76';
         setProgress(100, 'Done! ♡');
         status.innerText = 'Upload Complete! ♡';
-        setTimeout(hideProgress, 3000);
+        setTimeout(() => { pWrap.style.display = 'none'; }, 3000);
 
         document.getElementById('memTitle').value = '';
         document.getElementById('memLabel').value = '';
@@ -2189,10 +2207,10 @@
         document.getElementById('memFile').value  = '';
 
       } catch (e) {
-        hideProgress();
+        pWrap.style.display = 'none';
         let msg = e.message || 'Unknown error';
         if (msg.includes('PERMISSION_DENIED') || msg.includes('permission-denied')) {
-          msg = 'Firestore permission denied — go to Firebase Console → Firestore Database → Rules and allow authenticated writes.';
+          msg = 'Firestore permission denied — check Firebase Console → Firestore → Rules.';
         }
         status.innerText = 'Error: ' + msg;
       }
