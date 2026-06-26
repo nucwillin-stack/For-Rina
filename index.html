@@ -147,12 +147,12 @@
 
     .reveal{
       opacity:0;
-      transform:translateY(30px);
-      transition:opacity .9s ease, transform .9s ease;
+      transform:translateY(28px) scale(.996);
+      transition:opacity 1s cubic-bezier(.16,1,.3,1), transform 1s cubic-bezier(.16,1,.3,1);
     }
     .reveal.show{
       opacity:1;
-      transform:translateY(0);
+      transform:translateY(0) scale(1);
     }
 
     .stagger > *{
@@ -331,8 +331,9 @@
       box-shadow:0 16px 34px rgba(242,139,173,.24);
     }
     .btn-primary:hover{
-      transform:translateY(-2px) scale(1.03);
-      box-shadow:0 22px 40px rgba(242,139,173,.3);
+      transform:translateY(-3px) scale(1.04);
+      box-shadow:0 24px 44px rgba(242,139,173,.34), 0 0 0 1px rgba(242,139,173,.16), 0 0 20px rgba(242,139,173,.12);
+      filter:brightness(1.04);
     }
 
     .btn-secondary{
@@ -713,15 +714,16 @@
       color:#fffdfc;
       isolation:isolate;
       transform:translateY(0);
-      transition:transform .28s ease, box-shadow .28s ease;
+      transition:transform .32s cubic-bezier(.34,1.56,.64,1), box-shadow .32s ease;
       cursor:pointer;
       box-shadow:0 14px 28px rgba(88,52,67,.08);
     }
 
     .memory:hover{
-      transform:translateY(-6px) rotate(-.5deg);
-      box-shadow:0 18px 34px rgba(88,52,67,.14);
+      transform:translateY(-10px) scale(1.025) rotate(-.35deg);
+      box-shadow:0 30px 58px rgba(88,52,67,.16), 0 0 0 1px rgba(242,139,173,.12), 0 0 32px rgba(242,139,173,.07);
     }
+    .memory:active{ transform:scale(.97); }
 
     .memory::after{
       content:"";
@@ -1040,8 +1042,8 @@
       transition:transform .2s ease, box-shadow .2s ease;
     }
     .promise-chip:hover{
-      transform:translateY(-4px);
-      box-shadow:0 14px 28px rgba(143,93,111,.08);
+      transform:translateY(-6px) scale(1.01);
+      box-shadow:0 18px 36px rgba(143,93,111,.1), 0 0 0 1px rgba(242,139,173,.1);
     }
     .promise-chip strong{
       font-family:"Baloo 2", cursive;
@@ -1184,11 +1186,13 @@
       padding:1.35rem;
       position:relative;
       overflow:hidden;
-      transform:translateY(14px) scale(.98);
-      transition:transform .28s ease;
+      transform:translateY(20px) scale(.94);
+      opacity:0;
+      transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .28s ease;
     }
     .modal.show .modal-card{
       transform:translateY(0) scale(1);
+      opacity:1;
     }
     .modal-card::before{
       content:"";
@@ -1467,6 +1471,205 @@
       .g-img{ max-height:52vh; }
     }
 
+
+    /* ══ ANIMATED BACKGROUND ORBS ═══════════════════════════════════════════ */
+    body::before{
+      content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+      background:
+        radial-gradient(ellipse 80% 55% at  8% 12%, rgba(255,191,209,.22) 0%, transparent 58%),
+        radial-gradient(ellipse 60% 70% at 92%  8%, rgba(255,231,191,.16) 0%, transparent 54%),
+        radial-gradient(ellipse 65% 48% at 88% 88%, rgba(196,155,216,.15) 0%, transparent 54%),
+        radial-gradient(ellipse 48% 58% at 18% 92%, rgba(255,209,224,.18) 0%, transparent 50%);
+      animation:bgOrbs 20s ease-in-out infinite alternate;
+    }
+    @keyframes bgOrbs{
+      0%  { opacity:.75; transform:scale(1)    translate(0,0); }
+      33% { opacity:1;   transform:scale(1.05) translate(.8%,-.4%); }
+      66% { opacity:.85; transform:scale(.97)  translate(-.4%,.8%); }
+      100%{ opacity:1;   transform:scale(1.03) translate(.4%,.4%); }
+    }
+
+    /* ══ MAGIC CANVAS ════════════════════════════════════════════════════════ */
+    #magicCanvas{
+      position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.8;
+    }
+
+    /* ══ SCROLL PROGRESS BAR ═════════════════════════════════════════════════ */
+    #scrollProgress{
+      position:fixed;top:0;left:0;height:3px;width:0%;z-index:300;
+      background:linear-gradient(90deg,var(--pink),var(--pink-deep),rgba(196,155,216,.9));
+      border-radius:0 999px 999px 0;
+      box-shadow:0 0 10px rgba(242,139,173,.5);
+      transition:width .12s linear;
+      pointer-events:none;
+    }
+
+    /* ══ RIPPLE ══════════════════════════════════════════════════════════════ */
+    .btn{ position:relative; overflow:hidden; }
+    .ripple-wave{
+      position:absolute;border-radius:50%;
+      background:rgba(255,255,255,.35);
+      transform:translate(-50%,-50%) scale(0);
+      animation:rippleOut .6s ease-out forwards;
+      pointer-events:none;width:8px;height:8px;
+    }
+    @keyframes rippleOut{
+      to{ transform:translate(-50%,-50%) scale(28); opacity:0; }
+    }
+
+    /* ══ HEART BREATHING ═════════════════════════════════════════════════════ */
+    @keyframes heartBreath{
+      0%,100%{ transform:scale(1);
+               box-shadow:0 18px 36px rgba(242,139,173,.24); }
+      40%    { transform:scale(1.028);
+               box-shadow:0 24px 44px rgba(242,139,173,.34), 0 0 32px rgba(242,139,173,.14); }
+    }
+    .heart-btn{ animation:heartBreath 3.2s ease-in-out infinite; }
+    .heart-btn:hover{
+      animation:none;
+      transform:translateY(-5px) scale(1.04);
+      box-shadow:0 28px 50px rgba(242,139,173,.38), 0 0 38px rgba(242,139,173,.18);
+    }
+
+    /* ══ LOCK BADGE PULSE ════════════════════════════════════════════════════ */
+    @keyframes badgePulse{
+      0%,100%{ box-shadow:0 18px 34px rgba(242,139,173,.28), 0 0 0 0   rgba(242,139,173,.25); }
+      50%    { box-shadow:0 18px 34px rgba(242,139,173,.28), 0 0 0 12px rgba(242,139,173,.0); }
+    }
+    .lock-badge{ animation:badgePulse 2.8s ease-in-out infinite; }
+
+    /* ══ BRAND MARK GLOW ═════════════════════════════════════════════════════ */
+    @keyframes brandGlow{
+      0%,100%{ box-shadow:inset 0 2px 10px rgba(255,255,255,.5), 0 12px 24px rgba(242,139,173,.22); }
+      50%    { box-shadow:inset 0 2px 10px rgba(255,255,255,.5), 0 12px 24px rgba(242,139,173,.38), 0 0 20px rgba(242,139,173,.18); }
+    }
+    .brand-mark{ animation:brandGlow 3s ease-in-out infinite; }
+
+    /* ══ MEMORY BADGE WIGGLE ═════════════════════════════════════════════════ */
+    @keyframes badgeWiggle{
+      0%,88%,100%{ transform:scale(1)   rotate(0deg); }
+      92%         { transform:scale(1.16) rotate(10deg); }
+      96%         { transform:scale(1.08) rotate(-6deg); }
+    }
+    .memory-badge{ animation:badgeWiggle 5s ease-in-out infinite; }
+
+    /* ══ ALBUM STACKED APPEARANCE ════════════════════════════════════════════ */
+    .dyn-memory.is-album::before{
+      content:'';position:absolute;inset:0;border-radius:24px;
+      background:rgba(255,248,251,.3);
+      border:1px solid rgba(255,255,255,.55);
+      z-index:-3;
+      transform:rotate(3.5deg) scale(.97) translateY(5px);
+      box-shadow:0 6px 16px rgba(88,52,67,.08);
+    }
+    .dyn-memory.is-album .memory-badge{
+      background:linear-gradient(135deg,rgba(242,139,173,.82),rgba(196,155,216,.78));
+      font-size:.76rem;padding:0 .7rem;min-width:auto;
+    }
+
+    /* ══ CARD COVER IMAGE GLOW ON HOVER ══════════════════════════════════════ */
+    .mem-cover-img{ transition:filter .35s ease; }
+    .dyn-memory:hover .mem-cover-img{ filter:brightness(1.06) saturate(1.1); }
+
+    /* ══ STATIC MEMORY CARD COLOUR GLOW ═════════════════════════════════════ */
+    .memory.one:hover{   box-shadow:0 30px 58px rgba(242,139,173,.22), 0 0 42px rgba(242,139,173,.1); }
+    .memory.two:hover{   box-shadow:0 30px 58px rgba(255,207,174,.22), 0 0 42px rgba(255,207,174,.1); }
+    .memory.three:hover{ box-shadow:0 30px 58px rgba(196,155,216,.22), 0 0 42px rgba(196,155,216,.1); }
+
+    /* ══ INPUT FOCUS GLOW ════════════════════════════════════════════════════ */
+    .lock-input:focus{
+      border-color:rgba(242,139,173,.55);
+      box-shadow:0 0 0 6px rgba(242,139,173,.1), 0 0 22px rgba(242,139,173,.08);
+    }
+
+    /* ══ NAV LINK HOVER GLOW ═════════════════════════════════════════════════ */
+    .nav-links a:hover{ color:var(--pink-deep); }
+
+    /* ══ GLASS HOVER GLOW ════════════════════════════════════════════════════ */
+    .glass{ transition:box-shadow .35s ease, transform .35s ease; }
+    .glass:hover{
+      box-shadow:var(--shadow), 0 0 0 1px rgba(242,139,173,.14), 0 0 26px rgba(242,139,173,.06);
+    }
+
+    /* ══ NOTES GRID CARD HOVER ═══════════════════════════════════════════════ */
+    .notes-grid article{ transition:transform .28s ease, box-shadow .28s ease; }
+    .notes-grid article:hover{
+      transform:translateY(-3px);
+      box-shadow:var(--shadow), 0 0 0 1px rgba(242,139,173,.1), 0 0 22px rgba(242,139,173,.05);
+    }
+
+    /* ══ PILL HOVER ══════════════════════════════════════════════════════════ */
+    .pill{ transition:transform .2s ease, box-shadow .2s ease, background .2s ease; }
+    .pill:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 22px rgba(143,93,111,.08), 0 0 0 1px rgba(242,139,173,.1);
+      background:rgba(255,255,255,.9);
+    }
+
+    /* ══ CHOICE BTN HOVER ════════════════════════════════════════════════════ */
+    .choice-btn{ transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease; }
+    .choice-btn:hover{
+      transform:translateY(-3px);
+      border-color:rgba(242,139,173,.25);
+      box-shadow:0 10px 28px rgba(143,93,111,.08), 0 0 0 1px rgba(242,139,173,.1);
+    }
+
+    /* ══ SPOTIFY FRAME WRAP HOVER ════════════════════════════════════════════ */
+    .spotify-frame-wrap{
+      transition:box-shadow .3s ease, transform .3s ease;
+    }
+    .spotify-frame-wrap:hover{
+      transform:translateY(-2px);
+      box-shadow:0 26px 50px rgba(143,93,111,.12), 0 0 0 1px rgba(242,139,173,.1);
+    }
+
+    /* ══ GALLERY SLIDE TRANSITIONS ═══════════════════════════════════════════ */
+    .g-img{ transition:opacity .3s ease, transform .3s cubic-bezier(.4,0,.2,1); }
+    .g-bottom{
+      transform:translateY(14px);opacity:0;
+      transition:transform .38s cubic-bezier(.16,1,.3,1) .12s, opacity .38s ease .12s;
+    }
+    #galleryOverlay.g-show .g-bottom{ transform:translateY(0); opacity:1; }
+
+    /* ══ COUNT PILL FEEDBACK ═════════════════════════════════════════════════ */
+    .count-pill{ transition:background .3s ease, box-shadow .3s ease, transform .2s ease; }
+    .count-pill.tapped{
+      background:rgba(255,191,209,.22);
+      box-shadow:0 0 0 5px rgba(242,139,173,.1);
+      transform:scale(1.04);
+    }
+
+    /* ══ ENHANCED SPARKLE GLOW ═══════════════════════════════════════════════ */
+    .sparkle::before,
+    .sparkle::after{
+      box-shadow:0 0 8px rgba(255,255,255,.9), 0 0 22px rgba(255,191,209,.7);
+    }
+
+    /* ══ KICKER ENTRANCE ═════════════════════════════════════════════════════ */
+    .reveal.show .kicker{
+      letter-spacing:.19em;
+      transition:letter-spacing .6s ease;
+    }
+
+    /* ══ PROMISE CHIP HOVER GLOW ═════════════════════════════════════════════ */
+    .promise-chip{
+      transition:transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s ease, background .28s ease;
+    }
+    .promise-chip:hover{
+      background:rgba(255,255,255,.82);
+      box-shadow:0 18px 36px rgba(143,93,111,.1), 0 0 0 1px rgba(242,139,173,.1);
+    }
+
+    /* ══ FLOAT HEART GLOW ════════════════════════════════════════════════════ */
+    .float-heart{
+      filter:drop-shadow(0 0 6px rgba(242,139,173,.28));
+    }
+
+    /* ══ BURST PARTICLE ENHANCED ═════════════════════════════════════════════ */
+    .burst{
+      text-shadow:0 0 8px rgba(242,139,173,.6), 0 0 20px rgba(242,139,173,.3);
+    }
+
   </style>
 </head>
 <body>
@@ -1489,6 +1692,8 @@
     <span class="sparkle" style="top:82%; left:48%; animation-delay:3.1s;"></span>
   </div>
 
+  <div id="scrollProgress" aria-hidden="true"></div>
+  <canvas id="magicCanvas" aria-hidden="true"></canvas>
   <div class="burst-layer" id="burstLayer" aria-hidden="true"></div>
 
   <div class="app-shell">
@@ -2108,6 +2313,138 @@
     });
 
     anniversaryInput.focus();
+
+    /* ── Scroll progress bar ─────────────────────────────────────────────── */
+    (function(){
+      const bar = document.getElementById('scrollProgress');
+      if (!bar) return;
+      function updateBar(){
+        const h = document.documentElement;
+        const pct = (h.scrollTop || document.body.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+        bar.style.width = Math.min(100, pct) + '%';
+      }
+      window.addEventListener('scroll', updateBar, { passive: true });
+    })();
+
+    /* ── Floating particle canvas (Particle canvas) ──────────────────────── */
+    (function(){
+      const canvas = document.getElementById('magicCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const isMobile = window.innerWidth < 768;
+      const MAX = isMobile ? 11 : 20;
+      let W, H, particles = [], raf;
+
+      function resize(){
+        W = canvas.width  = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+
+      const PALETTE = [
+        [242,139,173], [255,191,209], [196,155,216],
+        [255,209,224], [255,231,191], [255,167,196]
+      ];
+
+      function mkP(randomY){
+        const c = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+        return {
+          x: Math.random() * W,
+          y: randomY ? Math.random() * H : H + 10,
+          r: 2 + Math.random() * 4.5,
+          vy: 0.18 + Math.random() * 0.42,
+          vx: (Math.random() - .5) * .22,
+          op: .1 + Math.random() * .32,
+          opDir: .002 + Math.random() * .003,
+          pulse: Math.random() * Math.PI * 2,
+          ps: .014 + Math.random() * .022,
+          isStar: Math.random() > .62,
+          rot: Math.random() * Math.PI * 2,
+          rs: (Math.random() - .5) * .012,
+          col: c
+        };
+      }
+
+      function drawStar(ctx, size){
+        ctx.beginPath();
+        for (let i = 0; i < 4; i++){
+          ctx.moveTo(0, -size);
+          ctx.lineTo(0,  size);
+          ctx.rotate(Math.PI / 4);
+        }
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+
+      for (let i = 0; i < MAX; i++) particles.push(mkP(true));
+
+      function loop(){
+        ctx.clearRect(0, 0, W, H);
+        particles = particles.filter(p => p.y > -20 && p.x > -20 && p.x < W + 20);
+        while (particles.length < MAX) particles.push(mkP(false));
+
+        particles.forEach(p => {
+          p.y -= p.vy; p.x += p.vx;
+          p.pulse += p.ps; p.rot += p.rs;
+          p.op += p.opDir;
+          if (p.op > .44 || p.op < .07) p.opDir *= -1;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.globalAlpha = p.op * (.8 + .2 * Math.sin(p.pulse));
+          const [r, g, b] = p.col;
+
+          if (p.isStar){
+            ctx.strokeStyle = `rgb(${r},${g},${b})`;
+            drawStar(ctx, p.r * 1.5);
+          } else {
+            ctx.fillStyle = `rgb(${r},${g},${b})`;
+            ctx.beginPath();
+            ctx.arc(0, 0, p.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.restore();
+        });
+        raf = requestAnimationFrame(loop);
+      }
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) cancelAnimationFrame(raf);
+        else loop();
+      });
+
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) loop();
+    })();
+
+    /* ── Ripple effect on all buttons ───────────────────────────────────── */
+    document.addEventListener('pointerdown', function(e){
+      const btn = e.target.closest('button, .btn, .pill, .choice-btn, .heart-btn');
+      if (!btn || btn.classList.contains('mem-del-btn')) return;
+      const rect = btn.getBoundingClientRect();
+      const rip  = document.createElement('span');
+      rip.className = 'ripple-wave';
+      rip.style.left = (e.clientX - rect.left) + 'px';
+      rip.style.top  = (e.clientY - rect.top)  + 'px';
+      btn.appendChild(rip);
+      rip.addEventListener('animationend', () => rip.remove());
+    }, { passive: true });
+
+    /* ── Count pill tapped feedback ─────────────────────────────────────── */
+    heartBtn.addEventListener('click', function(){
+      const pill = document.querySelector('.count-pill');
+      if (!pill) return;
+      pill.classList.remove('tapped');
+      void pill.offsetWidth;
+      pill.classList.add('tapped');
+      setTimeout(() => pill.classList.remove('tapped'), 500);
+    });
+
+    /* ── Enhanced burst: more variety ───────────────────────────────────── */
+    const _origBurst = burstAt;
+    window.burstAt = burstAt;
+
     window.burstAt = burstAt;
   </script>
 
@@ -2231,9 +2568,16 @@
     const img  = document.getElementById('gImg');
     const dots = document.getElementById('gDots');
     const nav  = gUrls.length > 1;
-    img.style.opacity = '0';
+    img.style.transition = 'none';
+    img.style.transform  = 'translateX(0) scale(1)';
+    img.style.opacity    = '0';
     img.src = gUrls[gIdx];
-    img.onload = () => { img.style.opacity = '1'; };
+    img.onload = () => {
+      requestAnimationFrame(() => {
+        img.style.transition = 'opacity .35s ease';
+        img.style.opacity    = '1';
+      });
+    };
     document.getElementById('gPrev').style.display    = nav ? 'flex' : 'none';
     document.getElementById('gNext').style.display    = nav ? 'flex' : 'none';
     document.getElementById('gCounter').textContent   = nav ? (gIdx + 1) + ' / ' + gUrls.length : '';
@@ -2249,8 +2593,30 @@
 
   function gGo(dir) {
     if (gUrls.length < 2) return;
-    gIdx = (gIdx + dir + gUrls.length) % gUrls.length;
-    renderGImg();
+    const img = document.getElementById('gImg');
+    // Animate out
+    img.style.transition = 'opacity .16s ease, transform .16s ease';
+    img.style.opacity    = '0';
+    img.style.transform  = dir > 0 ? 'translateX(-50px) scale(.95)' : 'translateX(50px) scale(.95)';
+    setTimeout(() => {
+      gIdx = (gIdx + dir + gUrls.length) % gUrls.length;
+      // Prepare in-position on opposite side
+      img.style.transition = 'none';
+      img.style.transform  = dir > 0 ? 'translateX(50px) scale(.95)' : 'translateX(-50px) scale(.95)';
+      img.src = gUrls[gIdx];
+      // Animate in
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          img.style.transition = 'opacity .28s ease, transform .28s cubic-bezier(.16,1,.3,1)';
+          img.style.opacity    = '1';
+          img.style.transform  = 'translateX(0) scale(1)';
+        });
+      });
+      // Update counter and dots
+      const nav = gUrls.length > 1;
+      document.getElementById('gCounter').textContent = nav ? (gIdx + 1) + ' / ' + gUrls.length : '';
+      document.querySelectorAll('.g-dot').forEach((d, i) => d.classList.toggle('active', i === gIdx));
+    }, 170);
   }
 
   /* Swipe */
@@ -2334,7 +2700,7 @@
               .toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); } catch {}
 
       return (
-        '<article class="memory dyn-memory"' +
+        '<article class="memory dyn-memory' + (isAlbum ? ' is-album' : '') + '"' +
           ' data-id="'    + escapeHtml(id) + '"' +
           ' data-urls="'  + urlsAttr       + '"' +
           ' data-title="' + title          + '"' +
