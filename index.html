@@ -35,32 +35,15 @@
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
+    html{ background:var(--bg); }
     body{
       margin:0;
       font-family:"Nunito", sans-serif;
       color:var(--ink);
-      background:
-        radial-gradient(circle at 8% 12%, rgba(255,191,209,.26), transparent 24%),
-        radial-gradient(circle at 92% 10%, rgba(255,231,191,.34), transparent 22%),
-        radial-gradient(circle at 50% 100%, rgba(255,227,236,.36), transparent 28%),
-        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      background:transparent;
       overflow-x:hidden;
     }
 
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      z-index:0;
-      opacity:.34;
-      background-image:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.9) 0 2px, transparent 3px),
-        radial-gradient(circle at 80% 20%, rgba(255,255,255,.8) 0 2px, transparent 3px),
-        radial-gradient(circle at 50% 80%, rgba(255,255,255,.8) 0 2px, transparent 3px),
-        radial-gradient(circle at 28% 65%, rgba(255,255,255,.75) 0 1.5px, transparent 3px);
-      background-size:180px 180px,220px 220px,200px 200px,160px 160px;
-    }
 
     .wrap{
       width:min(calc(100% - 2rem), var(--max));
@@ -68,13 +51,19 @@
     }
 
     .float-layer,
-    .sparkle-layer,
+    .sparkle-layer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:3;
+    }
     .burst-layer{
       position:fixed;
       inset:0;
       pointer-events:none;
       overflow:hidden;
-      z-index:0;
+      z-index:600;
     }
 
     .float-heart{
@@ -1472,36 +1461,38 @@
     }
 
 
-    /* ══ ANIMATED BACKGROUND ORBS ═══════════════════════════════════════════ */
-    body::before{
-      content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+    /* ══ ANIMATED BACKGROUND ORBS — rendered by #bgLayer div (position:fixed) ══ */
+    #bgLayer{
+      position:fixed;inset:0;z-index:0;pointer-events:none;
       background:
-        radial-gradient(ellipse 80% 55% at  8% 12%, rgba(255,191,209,.22) 0%, transparent 58%),
-        radial-gradient(ellipse 60% 70% at 92%  8%, rgba(255,231,191,.16) 0%, transparent 54%),
-        radial-gradient(ellipse 65% 48% at 88% 88%, rgba(196,155,216,.15) 0%, transparent 54%),
-        radial-gradient(ellipse 48% 58% at 18% 92%, rgba(255,209,224,.18) 0%, transparent 50%);
+        radial-gradient(ellipse 80% 55% at  8% 12%, rgba(255,191,209,.24) 0%, transparent 58%),
+        radial-gradient(ellipse 60% 70% at 92%  8%, rgba(255,231,191,.18) 0%, transparent 54%),
+        radial-gradient(ellipse 65% 48% at 88% 88%, rgba(196,155,216,.17) 0%, transparent 54%),
+        radial-gradient(ellipse 48% 58% at 18% 92%, rgba(255,209,224,.20) 0%, transparent 50%),
+        var(--bg);
       animation:bgOrbs 20s ease-in-out infinite alternate;
     }
     @keyframes bgOrbs{
-      0%  { opacity:.75; transform:scale(1)    translate(0,0); }
+      0%  { opacity:.80; transform:scale(1)    translate(0,0); }
       33% { opacity:1;   transform:scale(1.05) translate(.8%,-.4%); }
-      66% { opacity:.85; transform:scale(.97)  translate(-.4%,.8%); }
+      66% { opacity:.88; transform:scale(.97)  translate(-.4%,.8%); }
       100%{ opacity:1;   transform:scale(1.03) translate(.4%,.4%); }
     }
 
     /* ══ MAGIC CANVAS ════════════════════════════════════════════════════════ */
     #magicCanvas{
-      position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.8;
+      position:fixed;inset:0;z-index:3;pointer-events:none;opacity:.75;
     }
 
     /* ══ SCROLL PROGRESS BAR ═════════════════════════════════════════════════ */
     #scrollProgress{
-      position:fixed;top:0;left:0;height:3px;width:0%;z-index:300;
+      position:fixed;top:0;left:0;height:3px;width:0%;z-index:900;
       background:linear-gradient(90deg,var(--pink),var(--pink-deep),rgba(196,155,216,.9));
       border-radius:0 999px 999px 0;
       box-shadow:0 0 10px rgba(242,139,173,.5);
-      transition:width .12s linear;
+      transition:width .15s linear;
       pointer-events:none;
+      min-width:0;
     }
 
     /* ══ RIPPLE ══════════════════════════════════════════════════════════════ */
@@ -1692,6 +1683,7 @@
     <span class="sparkle" style="top:82%; left:48%; animation-delay:3.1s;"></span>
   </div>
 
+  <div id="bgLayer" aria-hidden="true"></div>
   <div id="scrollProgress" aria-hidden="true"></div>
   <canvas id="magicCanvas" aria-hidden="true"></canvas>
   <div class="burst-layer" id="burstLayer" aria-hidden="true"></div>
@@ -2301,13 +2293,11 @@
     });
 
     document.addEventListener("click", (e) => {
+      // Skip iframes, the gallery overlay backdrop, and the admin panel
       if(
-        e.target.closest("button") ||
-        e.target.closest("a") ||
-        e.target.closest(".memory") ||
-        e.target.closest(".modal-card") ||
-        e.target.closest(".lock-card") ||
-        e.target.closest("iframe")
+        e.target.tagName === 'IFRAME' ||
+        e.target.id === 'galleryOverlay' ||
+        e.target.closest('#adminPanel')
       ) return;
       burstAt(e.clientX, e.clientY, 5);
     });
@@ -2319,11 +2309,14 @@
       const bar = document.getElementById('scrollProgress');
       if (!bar) return;
       function updateBar(){
-        const h = document.documentElement;
-        const pct = (h.scrollTop || document.body.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
-        bar.style.width = Math.min(100, pct) + '%';
+        const scrollTop  = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+        const pct        = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        bar.style.width  = Math.min(100, Math.max(0, pct)) + '%';
       }
-      window.addEventListener('scroll', updateBar, { passive: true });
+      window.addEventListener('scroll',  updateBar, { passive: true });
+      document.addEventListener('scroll', updateBar, { passive: true });
+      updateBar(); // set initial state
     })();
 
     /* ── Floating particle canvas (Particle canvas) ──────────────────────── */
