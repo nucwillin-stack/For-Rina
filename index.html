@@ -35,14 +35,33 @@
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
-    html{ background:var(--bg); }
     body{
       margin:0;
       font-family:"Nunito", sans-serif;
       color:var(--ink);
-      background:transparent;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(255,191,209,.26), transparent 24%),
+        radial-gradient(circle at 92% 10%, rgba(255,231,191,.34), transparent 22%),
+        radial-gradient(circle at 50% 100%, rgba(255,227,236,.36), transparent 28%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
       overflow-x:hidden;
     }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:.34;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.9) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+        radial-gradient(circle at 50% 80%, rgba(255,255,255,.8) 0 2px, transparent 3px),
+        radial-gradient(circle at 28% 65%, rgba(255,255,255,.75) 0 1.5px, transparent 3px);
+      background-size:180px 180px,220px 220px,200px 200px,160px 160px;
+    }
+
 
 
     .wrap{
@@ -51,26 +70,20 @@
     }
 
     .float-layer,
-    .sparkle-layer{
+    .sparkle-layer,
+    .burst-layer{
       position:fixed;
       inset:0;
       pointer-events:none;
       overflow:hidden;
       z-index:0;
     }
-    .burst-layer{
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      overflow:hidden;
-      z-index:600;
-    }
 
     .float-heart{
       position:absolute;
-      width:12px;
-      height:12px;
-      background:rgba(242,139,173,.07);
+      width:16px;
+      height:16px;
+      background:rgba(242,139,173,.14);
       transform:rotate(45deg);
       border-radius:4px;
       animation:floatUp linear infinite;
@@ -121,27 +134,27 @@
 
     .burst{
       position:absolute;
-      font-size:15px;
+      font-size:18px;
       color:var(--pink-deep);
-      animation:burst 750ms ease-out forwards;
-      text-shadow:0 0 8px rgba(242,139,173,.6), 0 0 18px rgba(242,139,173,.3);
+      animation:burst 900ms ease-out forwards;
+      text-shadow:0 6px 18px rgba(242,139,173,.3);
       will-change:transform,opacity;
     }
 
     @keyframes burst{
-      0%  {transform:translate(0,0) scale(.5);opacity:0}
-      25% {opacity:.8}
-      100%{transform:translate(var(--tx),var(--ty)) scale(.9);opacity:0}
+      0%{transform:translate(0,0) scale(.7);opacity:0}
+      20%{opacity:1}
+      100%{transform:translate(var(--tx), var(--ty)) scale(1.2);opacity:0}
     }
 
     .reveal{
       opacity:0;
-      transform:translateY(28px) scale(.996);
-      transition:opacity 1s cubic-bezier(.16,1,.3,1), transform 1s cubic-bezier(.16,1,.3,1);
+      transform:translateY(30px);
+      transition:opacity .9s ease, transform .9s ease;
     }
     .reveal.show{
       opacity:1;
-      transform:translateY(0) scale(1);
+      transform:translateY(0);
     }
 
     .stagger > *{
@@ -161,7 +174,7 @@
 
     .app-shell{
       position:relative;
-      z-index:2;
+      z-index:1;
     }
 
     .lock-screen{
@@ -320,9 +333,8 @@
       box-shadow:0 16px 34px rgba(242,139,173,.24);
     }
     .btn-primary:hover{
-      transform:translateY(-3px) scale(1.04);
-      box-shadow:0 24px 44px rgba(242,139,173,.34), 0 0 0 1px rgba(242,139,173,.16), 0 0 20px rgba(242,139,173,.12);
-      filter:brightness(1.04);
+      transform:translateY(-2px) scale(1.03);
+      box-shadow:0 22px 40px rgba(242,139,173,.3);
     }
 
     .btn-secondary{
@@ -703,16 +715,15 @@
       color:#fffdfc;
       isolation:isolate;
       transform:translateY(0);
-      transition:transform .32s cubic-bezier(.34,1.56,.64,1), box-shadow .32s ease;
+      transition:transform .28s ease, box-shadow .28s ease;
       cursor:pointer;
       box-shadow:0 14px 28px rgba(88,52,67,.08);
     }
 
     .memory:hover{
-      transform:translateY(-10px) scale(1.025) rotate(-.35deg);
-      box-shadow:0 30px 58px rgba(88,52,67,.16), 0 0 0 1px rgba(242,139,173,.12), 0 0 32px rgba(242,139,173,.07);
+      transform:translateY(-6px) rotate(-.5deg);
+      box-shadow:0 18px 34px rgba(88,52,67,.14);
     }
-    .memory:active{ transform:scale(.97); }
 
     .memory::after{
       content:"";
@@ -1031,8 +1042,8 @@
       transition:transform .2s ease, box-shadow .2s ease;
     }
     .promise-chip:hover{
-      transform:translateY(-6px) scale(1.01);
-      box-shadow:0 18px 36px rgba(143,93,111,.1), 0 0 0 1px rgba(242,139,173,.1);
+      transform:translateY(-4px);
+      box-shadow:0 14px 28px rgba(143,93,111,.08);
     }
     .promise-chip strong{
       font-family:"Baloo 2", cursive;
@@ -1175,13 +1186,11 @@
       padding:1.35rem;
       position:relative;
       overflow:hidden;
-      transform:translateY(20px) scale(.94);
-      opacity:0;
-      transition:transform .35s cubic-bezier(.34,1.56,.64,1), opacity .28s ease;
+      transform:translateY(14px) scale(.98);
+      transition:transform .28s ease;
     }
     .modal.show .modal-card{
       transform:translateY(0) scale(1);
-      opacity:1;
     }
     .modal-card::before{
       content:"";
@@ -1312,25 +1321,12 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      body, html {
-        background: var(--bg) !important;
-        color: var(--ink) !important;
-      }
-
+      /* Site is intentionally light/pink — do not override backgrounds.
+         Only ensure form elements stay readable if browser applies dark defaults. */
       input, textarea, select, button {
         background: #fff !important;
         color: var(--ink) !important;
         border-color: var(--line) !important;
-      }
-
-      .lock-card,
-      .site,
-      header,
-      main,
-      footer,
-      .modal-card {
-        background: var(--white-strong) !important;
-        color: var(--ink) !important;
       }
     }
 
@@ -1461,208 +1457,88 @@
     }
 
 
-    /* ══ ANIMATED BACKGROUND ORBS — rendered by #bgLayer div (position:fixed) ══ */
-    #bgLayer{
-      position:fixed;inset:0;z-index:1;pointer-events:none;
-      /* Solid base first, then vivid orbs on top */
-      background:
-        radial-gradient(ellipse 70% 50% at  8% 14%, rgba(255,182,203,.52) 0%, transparent 55%),
-        radial-gradient(ellipse 55% 65% at 93%  9%, rgba(255,222,173,.40) 0%, transparent 52%),
-        radial-gradient(ellipse 60% 45% at 87% 90%, rgba(196,155,216,.38) 0%, transparent 52%),
-        radial-gradient(ellipse 45% 55% at 16% 90%, rgba(255,192,203,.45) 0%, transparent 48%),
-        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(255,240,245,.30) 0%, transparent 60%),
-        var(--bg);
-      /* Animate only position/scale — no opacity so orbs stay vivid */
-      animation:bgOrbs 22s ease-in-out infinite alternate;
-    }
-    @keyframes bgOrbs{
-      0%  { transform:scale(1)    translate(0,     0); }
-      25% { transform:scale(1.04) translate(.6%,  -.3%); }
-      50% { transform:scale(.97)  translate(-.3%,  .5%); }
-      75% { transform:scale(1.03) translate(.4%,   .3%); }
-      100%{ transform:scale(1.01) translate(-.2%, -.2%); }
-    }
 
-    /* ══ MAGIC CANVAS ════════════════════════════════════════════════════════ */
-    #magicCanvas{
-      position:fixed;inset:0;z-index:0;pointer-events:none;
-    }
 
-    /* ══ SCROLL PROGRESS BAR ═════════════════════════════════════════════════ */
-    #scrollProgress{
-      position:fixed;top:0;left:0;height:3px;width:0%;z-index:900;
-      background:linear-gradient(90deg,var(--pink),var(--pink-deep),rgba(196,155,216,.9));
-      border-radius:0 999px 999px 0;
-      box-shadow:0 0 10px rgba(242,139,173,.5);
-      transition:width .15s linear;
+
+
+    /* ══ CUTE & INTERACTIVE TOUCHES ═══════════════════════════════════════════ */
+
+    /* Brand heart: gentle, single-element breathing pulse */
+    @keyframes brandPulse{
+      0%,100%{ transform:scale(1); }
+      50%    { transform:scale(1.07); }
+    }
+    .brand-mark{ animation:brandPulse 2.6s ease-in-out infinite; }
+
+    /* Heart-pop: a single large heart that floats up and fades on tap
+       (appended/removed by JS — see heartPopAt) */
+    .heart-pop{
+      position:fixed;
+      font-size:2.6rem;
+      color:#fff;
+      text-shadow:0 4px 14px rgba(0,0,0,.18);
       pointer-events:none;
-      min-width:0;
+      z-index:700;
+      transform:translate(-50%,-50%) scale(.3);
+      opacity:0;
+      animation:heartPop .85s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes heartPop{
+      0%  { transform:translate(-50%,-50%) scale(.3); opacity:0; }
+      18% { transform:translate(-50%,-58%) scale(1.15); opacity:1; }
+      35% { transform:translate(-50%,-62%) scale(1);    opacity:1; }
+      100%{ transform:translate(-50%,-110%) scale(.9);  opacity:0; }
     }
 
-    /* ══ RIPPLE ══════════════════════════════════════════════════════════════ */
-    .btn{ position:relative; overflow:hidden; }
-    .ripple-wave{
-      position:absolute;border-radius:50%;
-      background:rgba(255,255,255,.18);
-      transform:translate(-50%,-50%) scale(0);
-      animation:rippleOut .5s ease-out forwards;
-      pointer-events:none;width:6px;height:6px;
-    }
-    @keyframes rippleOut{
-      to{ transform:translate(-50%,-50%) scale(20); opacity:0; }
+    /* Tactile press feedback — every tappable surface settles slightly */
+    .btn:active,
+    .pill:active,
+    .choice-btn:active,
+    .memory:active,
+    .dyn-memory:active,
+    .promise-chip:active{
+      transform:scale(.97);
     }
 
-    /* ══ HEART BREATHING ═════════════════════════════════════════════════════ */
-    @keyframes heartBreath{
-      0%,100%{ transform:scale(1);
-               box-shadow:0 18px 36px rgba(242,139,173,.24); }
-      40%    { transform:scale(1.028);
-               box-shadow:0 24px 44px rgba(242,139,173,.34), 0 0 32px rgba(242,139,173,.14); }
+    /* Heart-button "thump" — brief pulse triggered on each tap via JS class
+       (NOT an infinite animation — plays once then the class is removed) */
+    @keyframes heartThump{
+      0%  { transform:scale(1); }
+      30% { transform:scale(1.08); }
+      55% { transform:scale(.97); }
+      100%{ transform:scale(1); }
     }
-    .heart-btn{ animation:heartBreath 3.2s ease-in-out infinite; }
-    .heart-btn:hover{
-      animation:none;
-      transform:translateY(-5px) scale(1.04);
-      box-shadow:0 28px 50px rgba(242,139,173,.38), 0 0 38px rgba(242,139,173,.18);
+    .heart-btn.thump{ animation:heartThump .42s ease; }
+
+    /* Shimmer sweep on hover — a soft diagonal light pass across cards.
+       Cards already have overflow:hidden, so this never leaks or covers text. */
+    .memory::after,
+    .dyn-memory::after,
+    .promise-chip::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:linear-gradient(115deg, transparent 40%, rgba(255,255,255,.32) 50%, transparent 60%);
+      transform:translateX(-120%);
+      pointer-events:none;
+      z-index:5;
+    }
+    .memory:hover::after,
+    .dyn-memory:hover::after,
+    .promise-chip:hover::after{
+      transform:translateX(120%);
+      transition:transform .85s ease;
     }
 
-    /* ══ LOCK BADGE PULSE ════════════════════════════════════════════════════ */
-    @keyframes badgePulse{
-      0%,100%{ box-shadow:0 18px 34px rgba(242,139,173,.28), 0 0 0 0   rgba(242,139,173,.25); }
-      50%    { box-shadow:0 18px 34px rgba(242,139,173,.28), 0 0 0 12px rgba(242,139,173,.0); }
+    /* Memory badge — tiny wiggle only on hover (not infinite/global) */
+    .memory:hover .memory-badge,
+    .dyn-memory:hover .memory-badge{
+      animation:badgeNudge .5s ease;
     }
-    .lock-badge{ animation:badgePulse 2.8s ease-in-out infinite; }
-
-    /* ══ BRAND MARK GLOW ═════════════════════════════════════════════════════ */
-    @keyframes brandGlow{
-      0%,100%{ box-shadow:inset 0 2px 10px rgba(255,255,255,.5), 0 12px 24px rgba(242,139,173,.22); }
-      50%    { box-shadow:inset 0 2px 10px rgba(255,255,255,.5), 0 12px 24px rgba(242,139,173,.38), 0 0 20px rgba(242,139,173,.18); }
-    }
-    .brand-mark{ animation:brandGlow 3s ease-in-out infinite; }
-
-    /* ══ MEMORY BADGE WIGGLE ═════════════════════════════════════════════════ */
-    @keyframes badgeWiggle{
-      0%,88%,100%{ transform:scale(1)   rotate(0deg); }
-      92%         { transform:scale(1.16) rotate(10deg); }
-      96%         { transform:scale(1.08) rotate(-6deg); }
-    }
-    .memory-badge{ animation:badgeWiggle 5s ease-in-out infinite; }
-
-    /* ══ ALBUM STACKED APPEARANCE ════════════════════════════════════════════ */
-    .dyn-memory.is-album::before{
-      content:'';position:absolute;inset:0;border-radius:24px;
-      background:rgba(255,248,251,.3);
-      border:1px solid rgba(255,255,255,.55);
-      z-index:-3;
-      transform:rotate(3.5deg) scale(.97) translateY(5px);
-      box-shadow:0 6px 16px rgba(88,52,67,.08);
-    }
-    .dyn-memory.is-album .memory-badge{
-      background:linear-gradient(135deg,rgba(242,139,173,.82),rgba(196,155,216,.78));
-      font-size:.76rem;padding:0 .7rem;min-width:auto;
-    }
-
-    /* ══ CARD COVER IMAGE GLOW ON HOVER ══════════════════════════════════════ */
-    .mem-cover-img{ transition:filter .35s ease; }
-    .dyn-memory:hover .mem-cover-img{ filter:brightness(1.06) saturate(1.1); }
-
-    /* ══ STATIC MEMORY CARD COLOUR GLOW ═════════════════════════════════════ */
-    .memory.one:hover{   box-shadow:0 30px 58px rgba(242,139,173,.22), 0 0 42px rgba(242,139,173,.1); }
-    .memory.two:hover{   box-shadow:0 30px 58px rgba(255,207,174,.22), 0 0 42px rgba(255,207,174,.1); }
-    .memory.three:hover{ box-shadow:0 30px 58px rgba(196,155,216,.22), 0 0 42px rgba(196,155,216,.1); }
-
-    /* ══ INPUT FOCUS GLOW ════════════════════════════════════════════════════ */
-    .lock-input:focus{
-      border-color:rgba(242,139,173,.55);
-      box-shadow:0 0 0 6px rgba(242,139,173,.1), 0 0 22px rgba(242,139,173,.08);
-    }
-
-    /* ══ NAV LINK HOVER GLOW ═════════════════════════════════════════════════ */
-    .nav-links a:hover{ color:var(--pink-deep); }
-
-    /* ══ GLASS HOVER GLOW ════════════════════════════════════════════════════ */
-    .glass{ transition:box-shadow .35s ease, transform .35s ease; }
-    .glass:hover{
-      box-shadow:var(--shadow), 0 0 0 1px rgba(242,139,173,.14), 0 0 26px rgba(242,139,173,.06);
-    }
-
-    /* ══ NOTES GRID CARD HOVER ═══════════════════════════════════════════════ */
-    .notes-grid article{ transition:transform .28s ease, box-shadow .28s ease; }
-    .notes-grid article:hover{
-      transform:translateY(-3px);
-      box-shadow:var(--shadow), 0 0 0 1px rgba(242,139,173,.1), 0 0 22px rgba(242,139,173,.05);
-    }
-
-    /* ══ PILL HOVER ══════════════════════════════════════════════════════════ */
-    .pill{ transition:transform .2s ease, box-shadow .2s ease, background .2s ease; }
-    .pill:hover{
-      transform:translateY(-2px);
-      box-shadow:0 8px 22px rgba(143,93,111,.08), 0 0 0 1px rgba(242,139,173,.1);
-      background:rgba(255,255,255,.9);
-    }
-
-    /* ══ CHOICE BTN HOVER ════════════════════════════════════════════════════ */
-    .choice-btn{ transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease; }
-    .choice-btn:hover{
-      transform:translateY(-3px);
-      border-color:rgba(242,139,173,.25);
-      box-shadow:0 10px 28px rgba(143,93,111,.08), 0 0 0 1px rgba(242,139,173,.1);
-    }
-
-    /* ══ SPOTIFY FRAME WRAP HOVER ════════════════════════════════════════════ */
-    .spotify-frame-wrap{
-      transition:box-shadow .3s ease, transform .3s ease;
-    }
-    .spotify-frame-wrap:hover{
-      transform:translateY(-2px);
-      box-shadow:0 26px 50px rgba(143,93,111,.12), 0 0 0 1px rgba(242,139,173,.1);
-    }
-
-    /* ══ GALLERY SLIDE TRANSITIONS ═══════════════════════════════════════════ */
-    .g-img{ transition:opacity .3s ease, transform .3s cubic-bezier(.4,0,.2,1); }
-    .g-bottom{
-      transform:translateY(14px);opacity:0;
-      transition:transform .38s cubic-bezier(.16,1,.3,1) .12s, opacity .38s ease .12s;
-    }
-    #galleryOverlay.g-show .g-bottom{ transform:translateY(0); opacity:1; }
-
-    /* ══ COUNT PILL FEEDBACK ═════════════════════════════════════════════════ */
-    .count-pill{ transition:background .3s ease, box-shadow .3s ease, transform .2s ease; }
-    .count-pill.tapped{
-      background:rgba(255,191,209,.22);
-      box-shadow:0 0 0 5px rgba(242,139,173,.1);
-      transform:scale(1.04);
-    }
-
-    /* ══ ENHANCED SPARKLE GLOW ═══════════════════════════════════════════════ */
-    .sparkle::before,
-    .sparkle::after{
-      box-shadow:0 0 8px rgba(255,255,255,.9), 0 0 22px rgba(255,191,209,.7);
-    }
-
-    /* ══ KICKER ENTRANCE ═════════════════════════════════════════════════════ */
-    .reveal.show .kicker{
-      letter-spacing:.19em;
-      transition:letter-spacing .6s ease;
-    }
-
-    /* ══ PROMISE CHIP HOVER GLOW ═════════════════════════════════════════════ */
-    .promise-chip{
-      transition:transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .28s ease, background .28s ease;
-    }
-    .promise-chip:hover{
-      background:rgba(255,255,255,.82);
-      box-shadow:0 18px 36px rgba(143,93,111,.1), 0 0 0 1px rgba(242,139,173,.1);
-    }
-
-    /* ══ FLOAT HEART GLOW ════════════════════════════════════════════════════ */
-    .float-heart{
-      filter:drop-shadow(0 0 3px rgba(242,139,173,.12));
-    }
-
-    /* ══ BURST PARTICLE ENHANCED ═════════════════════════════════════════════ */
-    .burst{
-      text-shadow:0 0 8px rgba(242,139,173,.6), 0 0 20px rgba(242,139,173,.3);
+    @keyframes badgeNudge{
+      0%,100%{ transform:scale(1)    rotate(0deg); }
+      40%    { transform:scale(1.14) rotate(8deg); }
+      70%    { transform:scale(1.04) rotate(-4deg); }
     }
 
   </style>
@@ -1687,9 +1563,6 @@
     <span class="sparkle" style="top:82%; left:48%; animation-delay:3.1s;"></span>
   </div>
 
-  <div id="bgLayer" aria-hidden="true"></div>
-  <div id="scrollProgress" aria-hidden="true"></div>
-  <canvas id="magicCanvas" aria-hidden="true"></canvas>
   <div class="burst-layer" id="burstLayer" aria-hidden="true"></div>
 
   <div class="app-shell">
@@ -2168,22 +2041,31 @@
       modal.setAttribute("aria-hidden", "true");
     }
 
-    function burstAt(x, y, amount = 6){
-      const count = Math.min(amount, 8);
-      const chars = ["✦","♡","✦","·","♡","✦"];
-      for(let i = 0; i < count; i++){
+    function burstAt(x, y, amount = 10){
+      for(let i = 0; i < amount; i++){
         const item = document.createElement("span");
         item.className = "burst";
-        item.textContent = chars[i % chars.length];
+        item.textContent = Math.random() > 0.5 ? "❤" : "✦";
         item.style.left = x + "px";
         item.style.top = y + "px";
         const angle = Math.random() * Math.PI * 2;
-        const distance = 45 + Math.random() * 70;
+        const distance = 28 + Math.random() * 72;
         item.style.setProperty("--tx", Math.cos(angle) * distance + "px");
         item.style.setProperty("--ty", Math.sin(angle) * distance + "px");
         burstLayer.appendChild(item);
         setTimeout(() => item.remove(), 900);
       }
+    }
+
+    // Single floating heart that pops up and fades — Instagram-style tap delight
+    function heartPopAt(x, y){
+      const heart = document.createElement("span");
+      heart.className = "heart-pop";
+      heart.textContent = "♥";
+      heart.style.left = x + "px";
+      heart.style.top  = y + "px";
+      burstLayer.appendChild(heart);
+      setTimeout(() => heart.remove(), 850);
     }
 
     lockForm.addEventListener("submit", (e) => {
@@ -2229,6 +2111,7 @@
       card.addEventListener("click", () => {
         const rect = card.getBoundingClientRect();
         burstAt(rect.left + rect.width / 2, rect.top + 70, 8);
+        heartPopAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
         openModal("A little memory", card.dataset.message, "✦");
       });
     });
@@ -2278,9 +2161,20 @@
       heartCount.textContent = count;
       const rect = heartBtn.getBoundingClientRect();
       burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 16);
+      heartPopAt(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
+      heartBtn.classList.remove("thump");
+      void heartBtn.offsetWidth;
+      heartBtn.classList.add("thump");
 
       if(count === 10){
         openModal("So much love", "You already tapped this ten times. That is actually adorable.", "❤");
+      } else if(count === 25){
+        openModal("Twenty-five!", "Okay, this is officially a habit now. I love that.", "❤");
+      } else if(count === 50){
+        openModal("Fifty taps", "You really meant it the first forty-nine times too. I felt every one.", "❤");
+      } else if(count === 100){
+        openModal("One hundred", "A hundred taps for a love that has no limit. That tracks.", "❤");
       }
     });
 
@@ -2299,204 +2193,20 @@
     });
 
     document.addEventListener("click", (e) => {
-      // Skip iframes, the gallery overlay backdrop, and the admin panel
       if(
-        e.target.tagName === 'IFRAME' ||
-        e.target.id === 'galleryOverlay' ||
-        e.target.closest('#adminPanel')
+        e.target.closest("button") ||
+        e.target.closest("a") ||
+        e.target.closest(".memory") ||
+        e.target.closest(".modal-card") ||
+        e.target.closest(".lock-card") ||
+        e.target.closest("iframe")
       ) return;
-      burstAt(e.clientX, e.clientY, 6);
+      burstAt(e.clientX, e.clientY, 5);
     });
 
     anniversaryInput.focus();
-
-    /* ── Scroll progress bar ─────────────────────────────────────────────── */
-    (function(){
-      const bar = document.getElementById('scrollProgress');
-      if (!bar) return;
-      function updateBar(){
-        const scrollTop  = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
-        const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
-        const pct        = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-        bar.style.width  = Math.min(100, Math.max(0, pct)) + '%';
-      }
-      window.addEventListener('scroll',  updateBar, { passive: true });
-      document.addEventListener('scroll', updateBar, { passive: true });
-      updateBar(); // set initial state
-    })();
-
-    /* ── Ambient background ambience (bokeh, micro-stars, rare hearts) ─────── */
-    (function initAmbience(){
-      const canvas = document.getElementById('magicCanvas');
-      if (!canvas || window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-
-      const ctx = canvas.getContext('2d');
-      let W, H, raf;
-
-      function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
-      resize();
-      window.addEventListener('resize', resize, { passive:true });
-
-      // ── Palette (pastel pinks, lavender, peach) ─────────────────────────────
-      const PAL = [[242,139,173],[255,191,209],[196,155,216],[255,209,224],[255,231,191]];
-
-      // ── Particle factory ────────────────────────────────────────────────────
-      // type: 0=bokeh blob, 1=micro-star, 2=tiny heart
-      function mkBokeh(){
-        const col = PAL[Math.floor(Math.random()*PAL.length)];
-        return { t:0, x:Math.random()*W, y:Math.random()*H,
-          r: 30+Math.random()*60,           // large — 30-90px
-          maxOp: .04+Math.random()*.04,      // 4-8% opacity
-          op:0, phase:'in',
-          hold: 200+Math.random()*300,       // 3-5 s at 60fps
-          hc:0,
-          vx:(Math.random()-.5)*.12,
-          vy:-.04-Math.random()*.08,
-          col };
-      }
-      function mkStar(){
-        return { t:1, x:Math.random()*W, y:Math.random()*H,
-          r: .8+Math.random()*2,             // tiny — 0.8-2.8px
-          maxOp: .08+Math.random()*.10,      // 8-18%
-          op:0, phase:'in',
-          hold: 80+Math.random()*120,        // 1.3-3.3 s
-          hc:0, vx:0, vy:0,
-          col:[255,255,255] };
-      }
-      function mkHeart(){
-        return { t:2,
-          x:.1*W+Math.random()*.8*W, y:H+10,
-          r: 3+Math.random()*4,              // tiny — 3-7px
-          maxOp:.05+Math.random()*.06,       // 5-11%
-          op:0, phase:'in',
-          hold:0, hc:0,
-          vx:(Math.random()-.5)*.15,
-          vy:-.25-Math.random()*.25,
-          col:PAL[0] };
-      }
-
-      // ── Renderers ───────────────────────────────────────────────────────────
-      function drawBokeh(p){
-        ctx.save();
-        ctx.globalAlpha = p.op;
-        const g = ctx.createRadialGradient(p.x,p.y,0, p.x,p.y,p.r);
-        const [r,g2,b] = p.col;
-        g.addColorStop(0,   `rgba(${r},${g2},${b},.9)`);
-        g.addColorStop(.55, `rgba(${r},${g2},${b},.35)`);
-        g.addColorStop(1,   `rgba(${r},${g2},${b},0)`);
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
-        ctx.restore();
-      }
-      function drawStar(p){
-        ctx.save();
-        ctx.globalAlpha = p.op;
-        ctx.shadowColor = 'rgba(255,255,255,.8)';
-        ctx.shadowBlur  = 3;
-        ctx.fillStyle   = '#fff';
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
-        ctx.restore();
-      }
-      function drawHeart(p){
-        const s = p.r, [r,g2,b] = p.col;
-        ctx.save();
-        ctx.translate(p.x,p.y);
-        ctx.globalAlpha = p.op;
-        ctx.fillStyle = `rgb(${r},${g2},${b})`;
-        ctx.beginPath();
-        ctx.moveTo(0,-s*.3);
-        ctx.bezierCurveTo(-s,-s*1.1,-s*1.4,s*.5,0,s);
-        ctx.bezierCurveTo( s*1.4,s*.5,s,-s*1.1,0,-s*.3);
-        ctx.fill();
-        ctx.restore();
-      }
-
-      // ── Lifecycle update ─────────────────────────────────────────────────────
-      const RATE = .0018; // fade speed — slow in/out
-      function step(p){
-        p.x += p.vx; p.y += p.vy;
-        if      (p.phase==='in')  { p.op=Math.min(p.op+RATE,p.maxOp); if(p.op>=p.maxOp){p.phase='hold';} }
-        else if (p.phase==='hold'){ p.hc++; if(p.hc>=p.hold)p.phase='out'; }
-        else                      { p.op=Math.max(0,p.op-RATE); }
-        return p.op>0||p.phase!=='out';
-      }
-
-      // ── Initial population ───────────────────────────────────────────────────
-      let particles = [];
-      for(let i=0;i<4;i++) particles.push(mkBokeh());
-      for(let i=0;i<5;i++) particles.push(mkStar());
-
-      // ── Spawn control ────────────────────────────────────────────────────────
-      const MAX = {0:5, 1:7, 2:2};
-      let spawnT = 0;
-
-      function loop(){
-        ctx.clearRect(0,0,W,H);
-
-        // Very slow spawn — every ~2s, low probability
-        if(++spawnT > 120){
-          spawnT = 0;
-          const counts = {0:0,1:0,2:0};
-          particles.forEach(p=>counts[p.t]++);
-          if(counts[0]<MAX[0] && Math.random()<.45) particles.push(mkBokeh());
-          if(counts[1]<MAX[1] && Math.random()<.55) particles.push(mkStar());
-          if(counts[2]<MAX[2] && Math.random()<.08) particles.push(mkHeart()); // rare
-        }
-
-        particles = particles.filter(p=>{
-          const alive = step(p);
-          if(alive && p.op>.001){
-            if(p.t===0) drawBokeh(p);
-            else if(p.t===1) drawStar(p);
-            else drawHeart(p);
-          }
-          return alive;
-        });
-
-        raf = requestAnimationFrame(loop);
-      }
-
-      document.addEventListener('visibilitychange',()=>{
-        if(document.hidden) cancelAnimationFrame(raf); else loop();
-      });
-      loop();
-    })();
-    /* ── Ripple effect on all buttons ───────────────────────────────────── */
-    document.addEventListener('pointerdown', function(e){
-      const el = e.target.closest('button, .btn, .pill, .choice-btn, .heart-btn, .memory, .promise-chip, .notes-grid article');
-      if (!el || el.classList.contains('mem-del-btn')) return;
-      // Subtle ripple inside element
-      if(el.style.position !== 'absolute' && el.style.position !== 'fixed') el.style.position = 'relative';
-      el.style.overflow = 'hidden';
-      const rect = el.getBoundingClientRect();
-      const rip  = document.createElement('span');
-      rip.className = 'ripple-wave';
-      rip.style.left = (e.clientX - rect.left) + 'px';
-      rip.style.top  = (e.clientY - rect.top)  + 'px';
-      el.appendChild(rip);
-      rip.addEventListener('animationend', () => rip.remove());
-      // Tap-glow ring
-      el.classList.remove('tap-glow');
-      void el.offsetWidth;
-      el.classList.add('tap-glow');
-      el.addEventListener('animationend', () => el.classList.remove('tap-glow'), { once:true });
-    }, { passive: true });
-
-    /* ── Count pill tapped feedback ─────────────────────────────────────── */
-    heartBtn.addEventListener('click', function(){
-      const pill = document.querySelector('.count-pill');
-      if (!pill) return;
-      pill.classList.remove('tapped');
-      void pill.offsetWidth;
-      pill.classList.add('tapped');
-      setTimeout(() => pill.classList.remove('tapped'), 500);
-    });
-
-    /* ── Enhanced burst: more variety ───────────────────────────────────── */
-    const _origBurst = burstAt;
     window.burstAt = burstAt;
-
-    window.burstAt = burstAt;
+    window.heartPopAt = heartPopAt;
   </script>
 
   <!-- Firebase: admin panel, photo upload, and gallery -->
@@ -2605,6 +2315,7 @@
     if (window.burstAt) {
       const r = card.getBoundingClientRect();
       window.burstAt(r.left + r.width / 2, r.top + 60, 8);
+      if (window.heartPopAt) window.heartPopAt(r.left + r.width / 2, r.top + r.height / 2);
     }
   }
 
@@ -2751,7 +2462,7 @@
               .toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }); } catch {}
 
       return (
-        '<article class="memory dyn-memory' + (isAlbum ? ' is-album' : '') + '"' +
+        '<article class="memory dyn-memory"' +
           ' data-id="'    + escapeHtml(id) + '"' +
           ' data-urls="'  + urlsAttr       + '"' +
           ' data-title="' + title          + '"' +
@@ -2883,6 +2594,10 @@
         pBar.style.background = '#7ec8a0';
         setProgress(100, urls.length > 1 ? urls.length + ' photos saved ♡' : 'Done! ♡');
         status.innerText = 'Upload Complete! ♡';
+        if (window.burstAt) {
+          const br = document.getElementById('doUploadBtn').getBoundingClientRect();
+          window.burstAt(br.left + br.width / 2, br.top, 14);
+        }
         setTimeout(() => { pWrap.style.display = 'none'; }, 3000);
 
         document.getElementById('memTitle').value = '';
