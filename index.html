@@ -70,13 +70,23 @@
     }
 
     .float-layer,
-    .sparkle-layer,
-    .burst-layer{
+    .sparkle-layer{
       position:fixed;
       inset:0;
       pointer-events:none;
       overflow:hidden;
       z-index:0;
+    }
+    /* burst-layer must sit above ALL other layers — app-shell (1),
+       header (30), modal (1000), gallery (2000) — so tap sparks are
+       always visible regardless of what was tapped. pointer-events:none
+       means every click still reaches the element underneath. */
+    .burst-layer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:2500;
     }
 
     .float-heart{
@@ -134,17 +144,20 @@
 
     .burst{
       position:absolute;
-      font-size:18px;
-      color:var(--pink-deep);
-      animation:burst 900ms ease-out forwards;
-      text-shadow:0 6px 18px rgba(242,139,173,.3);
+      font-size:16px;
+      /* color set per-particle via JS for variety */
+      animation:burst 800ms cubic-bezier(.22,1,.36,1) forwards;
+      text-shadow:0 0 8px currentColor;
       will-change:transform,opacity;
+      pointer-events:none;
+      line-height:1;
+      transform-origin:center;
     }
 
     @keyframes burst{
-      0%{transform:translate(0,0) scale(.7);opacity:0}
-      20%{opacity:1}
-      100%{transform:translate(var(--tx), var(--ty)) scale(1.2);opacity:0}
+      0%  {transform:translate(0,0) scale(.4);opacity:0}
+      18% {opacity:1;transform:translate(calc(var(--tx)*.25),calc(var(--ty)*.25)) scale(1.1)}
+      100%{transform:translate(var(--tx), var(--ty)) scale(.8);opacity:0}
     }
 
     .reveal{
@@ -1510,20 +1523,19 @@
     }
     .heart-btn.thump{ animation:heartThump .42s ease; }
 
-    /* Shimmer sweep on hover — a soft diagonal light pass across cards.
-       Cards already have overflow:hidden, so this never leaks or covers text. */
-    .memory::after,
+    /* Shimmer sweep on hover — diagonal light pass across cards.
+       NOTE: .memory already uses ::after for its dark text-readable overlay,
+       so shimmer only applies to dyn-memory and promise-chip which are safe. */
     .dyn-memory::after,
     .promise-chip::after{
       content:'';
       position:absolute;
       inset:0;
-      background:linear-gradient(115deg, transparent 40%, rgba(255,255,255,.32) 50%, transparent 60%);
+      background:linear-gradient(115deg, transparent 40%, rgba(255,255,255,.28) 50%, transparent 60%);
       transform:translateX(-120%);
       pointer-events:none;
       z-index:5;
     }
-    .memory:hover::after,
     .dyn-memory:hover::after,
     .promise-chip:hover::after{
       transform:translateX(120%);
@@ -2041,17 +2053,23 @@
       modal.setAttribute("aria-hidden", "true");
     }
 
-    function burstAt(x, y, amount = 10){
+    const BURST_CHARS  = ["♡","✦","♡","✧","♡","·","✦","✿"];
+    const BURST_COLORS = ["#f28bad","#e89ab5","#c49de0","#ffb4c8","#ffcba4","#f9a8c9"];
+
+    function burstAt(x, y, amount = 8){
       for(let i = 0; i < amount; i++){
         const item = document.createElement("span");
         item.className = "burst";
-        item.textContent = Math.random() > 0.5 ? "❤" : "✦";
-        item.style.left = x + "px";
-        item.style.top = y + "px";
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 28 + Math.random() * 72;
+        item.textContent = BURST_CHARS[Math.floor(Math.random() * BURST_CHARS.length)];
+        item.style.left  = x + "px";
+        item.style.top   = y + "px";
+        item.style.color = BURST_COLORS[Math.floor(Math.random() * BURST_COLORS.length)];
+        item.style.fontSize = (13 + Math.random() * 11) + "px";
+        const angle    = (Math.PI * 2 * i / amount) + (Math.random() - .5) * .9;
+        const distance = 32 + Math.random() * 68;
         item.style.setProperty("--tx", Math.cos(angle) * distance + "px");
         item.style.setProperty("--ty", Math.sin(angle) * distance + "px");
+        item.style.animationDelay = (i * 18) + "ms";
         burstLayer.appendChild(item);
         setTimeout(() => item.remove(), 900);
       }
@@ -2192,16 +2210,19 @@
       }
     });
 
+    // Fire burst on every click — skip only iframes and the gallery backdrop
+    // (gallery is full-screen and clicking it closes it, no burst needed)
     document.addEventListener("click", (e) => {
-      if(
-        e.target.closest("button") ||
-        e.target.closest("a") ||
-        e.target.closest(".memory") ||
-        e.target.closest(".modal-card") ||
-        e.target.closest(".lock-card") ||
-        e.target.closest("iframe")
-      ) return;
-      burstAt(e.clientX, e.clientY, 5);
+      if(e.target.tagName === "IFRAME") return;
+      if(e.target.id === "galleryOverlay") return;
+      // Elements with their own burst calls get a smaller extra burst
+      // from the tap co-ordinate; elements with no burst get a full one
+      const hasOwnBurst = e.target.closest(".memory") ||
+                         e.target.closest("#heartBtn") ||
+                         e.target.closest("#cuteNoteBtn") ||
+                         e.target.closest("#newComplimentBtn") ||
+                         e.target.closest(".choice-btn[data-quiz='right']");
+      burstAt(e.clientX, e.clientY, hasOwnBurst ? 3 : 6);
     });
 
     anniversaryInput.focus();
