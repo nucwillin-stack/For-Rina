@@ -337,7 +337,7 @@
       border-radius:999px;
       font-weight:800;
       font-family:"Nunito", sans-serif;
-      transition:transform .2s ease, box-shadow .25s ease, background .25s ease, opacity .25s ease;
+      transition:transform .2s ease, box-shadow .2s ease, background .2s ease, opacity .2s ease;
     }
 
     .btn-primary{
@@ -878,7 +878,7 @@
       text-align:left;
       padding:0 1rem;
       cursor:pointer;
-      transition:transform .18s ease, background .2s ease, box-shadow .2s ease;
+      transition:transform .2s ease, background .2s ease, box-shadow .2s ease;
     }
 
     .choice-btn:hover{
@@ -956,7 +956,7 @@
       color:var(--ink);
       background:rgba(255,255,255,.7);
       border:1px solid var(--line);
-      transition:transform .18s ease, background .25s ease;
+      transition:transform .2s ease, background .2s ease;
     }
     .pill:hover{
       transform:translateY(-2px);
@@ -1200,10 +1200,12 @@
       position:relative;
       overflow:hidden;
       transform:translateY(14px) scale(.98);
-      transition:transform .28s ease;
+      opacity:0;
+      transition:transform .28s cubic-bezier(.22,1,.36,1), opacity .22s ease;
     }
     .modal.show .modal-card{
       transform:translateY(0) scale(1);
+      opacity:1;
     }
     .modal-card::before{
       content:"";
@@ -1553,6 +1555,79 @@
       70%    { transform:scale(1.04) rotate(-4deg); }
     }
 
+
+    /* ── Admin panel — aligned to the design system ────────────────────── */
+    .admin-input{
+      display:block;
+      width:100%;
+      min-height:50px;
+      padding:0 .9rem;
+      margin-bottom:.75rem;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.88);
+      font:700 .95rem "Nunito", sans-serif;
+      color:var(--ink);
+      outline:none;
+      transition:border-color .2s ease, box-shadow .2s ease;
+    }
+    .admin-input:focus{
+      border-color:rgba(242,139,173,.45);
+      box-shadow:0 0 0 4px rgba(242,139,173,.1);
+    }
+    textarea.admin-input{
+      min-height:90px;
+      padding:.75rem .9rem;
+      resize:vertical;
+    }
+    .admin-file{
+      display:block;
+      margin-bottom:.75rem;
+      font:.95rem "Nunito", sans-serif;
+      color:var(--muted);
+    }
+    .admin-panel-wrap{
+      background:rgba(255,255,255,.92);
+      border-radius:var(--radius);
+      padding:1.4rem;
+      margin-bottom:1.5rem;
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+    }
+    .admin-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+      padding:0 1.2rem;
+      border:none;
+      border-radius:999px;
+      background:linear-gradient(135deg, var(--pink), var(--pink-deep));
+      color:#fff;
+      font:800 .95rem "Nunito", sans-serif;
+      cursor:pointer;
+      transition:transform .2s ease, box-shadow .2s ease;
+      box-shadow:0 10px 24px rgba(242,139,173,.2);
+    }
+    .admin-btn:hover{ transform:translateY(-1px); box-shadow:0 14px 28px rgba(242,139,173,.28); }
+    .admin-btn:active{ transform:scale(.97); }
+    .admin-toggle{
+      background:none;
+      border:none;
+      color:var(--muted);
+      font:800 .95rem "Nunito", sans-serif;
+      cursor:pointer;
+      padding:.3rem .5rem;
+      border-radius:8px;
+      transition:color .2s ease;
+    }
+    .admin-toggle:hover{ color:var(--ink); }
+    .admin-status{
+      color:var(--pink-deep);
+      margin-top:.75rem;
+      font:700 .9rem "Nunito", sans-serif;
+      min-height:1.2em;
+    }
   </style>
 </head>
 <body>
@@ -1600,7 +1675,7 @@
                 placeholder="Enter the date"
                 aria-describedby="lockHint"
               />
-              <div class="helper" id="lockHint" style="visibility:hidden;">&nbsp;</div>
+              <div class="helper" id="lockHint">&nbsp;</div>
             </div>
             <button class="btn btn-primary" type="submit">Unlock letter</button>
             <div class="lock-error" id="lockError">That is not it yet. Try again.</div>
@@ -1763,25 +1838,25 @@
                 <h2>Cute pics to remind us how much we mean to each other.</h2>
               </div>
               <div style="display:flex;gap:.8rem;align-items:center;">
-                <button id="adminLoginToggle" style="background:none;border:none;color:#846a76;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;font-size:.95rem;">Admin</button>
+                <button id="adminLoginToggle" class="admin-toggle">Admin</button>
                 <button class="btn btn-secondary" id="logoutBtn" style="display:none;">Logout</button>
               </div>
             </div>
 
-            <div id="adminPanel" style="background:rgba(255,255,255,0.9);border-radius:20px;padding:20px;margin-bottom:20px;display:none;">
+            <div id="adminPanel" class="admin-panel-wrap" style="display:none;">
               <div id="loginBox">
-                <input type="email" id="adminEmail" placeholder="Admin Email" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;">
-                <input type="password" id="adminPass" placeholder="Password" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;">
-                <button id="doLoginBtn" style="padding:10px 20px;background:#f28bad;color:white;border:none;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;">Sign In</button>
+                <input type="email" id="adminEmail" class="admin-input" placeholder="Admin Email" autocomplete="email">
+                <input type="password" id="adminPass" class="admin-input" placeholder="Password" autocomplete="current-password">
+                <button id="doLoginBtn" class="admin-btn">Sign In</button>
               </div>
               <div id="uploadBox" style="display:none;">
-                <input type="text" id="memTitle" placeholder="Title (e.g. Movie Night)" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;">
-                <input type="text" id="memLabel" placeholder="Label (e.g. Our Fun)" style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;">
-                <textarea id="memMsg" placeholder="Message..." style="width:100%;padding:10px;margin-bottom:10px;border:1px solid var(--line);border-radius:10px;font-family:'Nunito',sans-serif;resize:vertical;"></textarea>
-                <input type="file" id="memFile" accept="image/*" multiple style="margin-bottom:10px;display:block;">
-                <button id="doUploadBtn" style="padding:10px 20px;background:#f28bad;color:white;border:none;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:800;">Post Memory</button>
+                <input type="text" id="memTitle" class="admin-input" placeholder="Title (e.g. Movie Night)">
+                <input type="text" id="memLabel" class="admin-input" placeholder="Label (e.g. Our Fun)">
+                <textarea id="memMsg" class="admin-input" placeholder="Message..."></textarea>
+                <input type="file" id="memFile" class="admin-file" accept="image/*" multiple>
+                <button id="doUploadBtn" class="admin-btn">Post Memory</button>
               </div>
-              <div id="statusText" style="color:#f28bad;margin-top:10px;font-family:'Nunito',sans-serif;font-weight:700;"></div>
+              <div id="statusText" class="admin-status"></div>
               <div id="progressWrap" style="display:none;margin-top:14px;">
                 <div style="background:#f0e6eb;border-radius:999px;height:10px;overflow:hidden;">
                   <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,#f28bad,#e89ab5);border-radius:999px;transition:width .25s ease;"></div>
@@ -2111,6 +2186,7 @@
       entries.forEach(entry => {
         if(entry.isIntersecting){
           entry.target.classList.add("show");
+          observer.unobserve(entry.target);
         }
       });
     }, { threshold: 0.14 });
@@ -2148,8 +2224,13 @@
       });
     });
 
+    let lastComplimentIdx = -1;
     function randomCompliment(){
-      const text = compliments[Math.floor(Math.random() * compliments.length)];
+      let idx;
+      do { idx = Math.floor(Math.random() * compliments.length); }
+      while (idx === lastComplimentIdx && compliments.length > 1);
+      lastComplimentIdx = idx;
+      const text = compliments[idx];
       complimentBubble.style.opacity = "0";
       complimentBubble.style.transform = "scale(.98)";
       setTimeout(() => {
@@ -2263,7 +2344,9 @@
   const compressImage = (file, maxPx = 1920, q = 0.85) =>
     new Promise(res => {
       const img = new Image();
+      const objUrl = URL.createObjectURL(file);
       img.onload = () => {
+        URL.revokeObjectURL(objUrl);
         let w = img.width, h = img.height;
         if (w > maxPx) { h = Math.round(h * maxPx / w); w = maxPx; }
         const c = document.createElement('canvas');
@@ -2271,8 +2354,8 @@
         c.getContext('2d').drawImage(img, 0, 0, w, h);
         c.toBlob(b => res(b || file), 'image/jpeg', q);
       };
-      img.onerror = () => res(file);
-      img.src = URL.createObjectURL(file);
+      img.onerror = () => { URL.revokeObjectURL(objUrl); res(file); };
+      img.src = objUrl;
     });
 
   function xhrUpload(blob, onProg) {
@@ -2490,7 +2573,7 @@
           ' data-label="' + label          + '"' +
           ' data-msg="'   + msg            + '"' +
           ' data-date="'  + escapeHtml(dateStr) + '">' +
-          '<img class="mem-cover-img" src="' + cover + '" alt="' + title + '">' +
+          '<img class="mem-cover-img" src="' + cover + '" alt="' + title + '" loading="lazy" decoding="async">' +
           '<div class="memory-badge">' + (isAlbum ? '📷 ' + urls.length : '♡') + '</div>' +
           (isAdmin
             ? '<button class="mem-del-btn" data-id="' + escapeHtml(id) + '" title="Delete memory">✕</button>'
