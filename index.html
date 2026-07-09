@@ -1900,7 +1900,7 @@
                 <h2>We've come so far together</h2>
               </div>
               <p class="lead" style="margin:0;max-width:38ch;">
-                Every second with you had become a memory I'll never wanna forget
+                Every second with you has become a memory that I'll never forget.
               </p>
             </div>
 
@@ -3038,4 +3038,76 @@
               perLoaded[i]      = loaded;
               const agg         = perLoaded.reduce((s, v) => s + v, 0);
               const label       = files.length > 1
-                ? 'Uploading ' + (i +                                 
+                ? 'Uploading ' + (i + 1) + ' of ' + files.length + '...'
+                : 'Uploading...';
+              setProgress(5 + (agg / totalBytes) * 85, label);
+            })
+          )
+        );
+
+        /* Stage 3 — Save to Firestore (90 → 100%) */
+        setProgress(90, 'Saving...');
+        const titleVal = document.getElementById('memTitle').value;
+        const labelVal = document.getElementById('memLabel').value;
+        const msgVal   = document.getElementById('memMsg').value;
+
+        await addDoc(collection(db, 'memories'), {
+          title:     titleVal,
+          label:     labelVal,
+          msg:       msgVal,
+          urls:      urls,       // new array format
+          url:       urls[0],    // backwards-compat for existing code
+          createdAt: serverTimestamp()
+        });
+
+        /* Done */
+        pBar.style.background = '#7ec8a0';
+        setProgress(100, urls.length > 1 ? urls.length + ' photos saved ♡' : 'Done! ♡');
+        status.innerText = 'Upload Complete! ♡';
+        if (window.burstAt) {
+          const br = document.getElementById('doUploadBtn').getBoundingClientRect();
+          window.burstAt(br.left + br.width / 2, br.top, 14);
+        }
+        setTimeout(() => { pWrap.style.display = 'none'; }, 3000);
+
+        document.getElementById('memTitle').value = '';
+        document.getElementById('memLabel').value = '';
+        document.getElementById('memMsg').value   = '';
+        document.getElementById('memFile').value  = '';
+
+      } catch (e) {
+        pWrap.style.display = 'none';
+        let msg = e.message || 'Unknown error';
+        if (msg.includes('PERMISSION_DENIED') || msg.includes('permission-denied'))
+          msg = 'Firestore permission denied — check Firebase Console → Firestore → Rules.';
+        status.innerText = 'Error: ' + msg;
+      }
+    };
+
+  } catch (globalErr) {
+    document.getElementById('statusText').innerText = 'Setup Error: ' + globalErr.message;
+  }
+</script>
+  <!-- ── Full-screen gallery / lightbox ────────────────────────────────────── -->
+  <div id="galleryOverlay" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button id="gClose" class="g-close" aria-label="Close">✕</button>
+    <button id="gPrev"  class="g-nav g-prev" aria-label="Previous" style="display:none;">‹</button>
+    <button id="gNext"  class="g-nav g-next" aria-label="Next"     style="display:none;">›</button>
+
+    <div class="g-stage">
+      <img id="gImg" class="g-img" src="" alt="">
+    </div>
+
+    <div class="g-bottom">
+      <div id="gCounter" class="g-counter"></div>
+      <div id="gDots"    class="g-dots"   style="display:none;"></div>
+      <div class="g-meta">
+        <div id="gLabel" class="g-meta-label"></div>
+        <div id="gTitle" class="g-meta-title"></div>
+        <div id="gDate"  class="g-meta-date"></div>
+        <div id="gMsg"   class="g-meta-msg"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
