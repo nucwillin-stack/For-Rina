@@ -639,6 +639,160 @@
       backdrop-filter:blur(14px);
     }
 
+    /* ── Relationship counters ────────────────────────────────────────────── */
+    .counter-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+      gap:1.4rem;
+    }
+
+    .counter-card{
+      position:relative;
+      padding:1.5rem;
+      overflow:hidden;
+      transition:transform .28s ease, box-shadow .28s ease;
+    }
+    .counter-card:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow-strong);
+    }
+    .counter-card:hover .counter-icon{
+      transform:scale(1.06);
+    }
+    .counter-icon{
+      transition:transform .28s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .counter-card-head{
+      display:flex;
+      align-items:center;
+      gap:.8rem;
+      margin-bottom:1.3rem;
+    }
+    .counter-icon{
+      flex:0 0 auto;
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      position:relative;
+      box-shadow:
+        inset 0 2px 10px rgba(255,255,255,.5),
+        0 12px 24px rgba(242,139,173,.2);
+    }
+    .counter-icon::after{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      color:#fffdfd;
+      font-size:1rem;
+      line-height:1;
+    }
+    .counter-icon.icon-heart{
+      background:radial-gradient(circle at 35% 35%, #ffeaf1, var(--pink) 58%, var(--pink-deep) 100%);
+    }
+    .counter-icon.icon-heart::after{ content:"❤"; }
+    .counter-icon.icon-spark{
+      background:radial-gradient(circle at 35% 35%, #fff3e6, var(--cream-deep) 55%, #c49de0 100%);
+      box-shadow:
+        inset 0 2px 10px rgba(255,255,255,.5),
+        0 12px 24px rgba(196,155,216,.24);
+    }
+    .counter-icon.icon-spark::after{ content:"✦"; font-size:1.05rem; }
+    .counter-title{
+      font-family:"Baloo 2", cursive;
+      font-size:1.18rem;
+      color:var(--ink);
+      line-height:1.15;
+    }
+    .counter-sub{
+      font-size:.8rem;
+      color:var(--muted);
+      font-weight:800;
+      margin-top:.1rem;
+    }
+
+    .counter-stats{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:.6rem;
+    }
+    .countdown-stats{ grid-template-columns:repeat(4, 1fr); }
+
+    .stat-block{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.55);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:.65rem .25rem;
+      text-align:center;
+    }
+    .stat-num{
+      font-family:"Baloo 2", cursive;
+      font-size:1.35rem;
+      font-weight:800;
+      color:var(--pink-deep);
+      line-height:1;
+      font-variant-numeric:tabular-nums;
+      transition:transform .18s ease;
+    }
+    .stat-num.tick{ animation:statTick .4s ease; }
+    @keyframes statTick{
+      0%  { transform:scale(1); }
+      35% { transform:scale(1.12); }
+      100%{ transform:scale(1); }
+    }
+    .stat-label{
+      font-size:.62rem;
+      text-transform:uppercase;
+      letter-spacing:.07em;
+      color:var(--muted);
+      margin-top:.28rem;
+      font-weight:700;
+    }
+
+    /* Celebration banner — hidden by default, shown only on the anniversary itself */
+    .celebration-banner{
+      display:none;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      margin-top:.2rem;
+      padding:.9rem;
+      border-radius:16px;
+      background:linear-gradient(135deg, rgba(255,191,209,.28), rgba(196,155,216,.22));
+      border:1px solid var(--line);
+      font-family:"Baloo 2", cursive;
+      font-size:1.05rem;
+      color:var(--pink-deep);
+      animation:celebrationGlow 2.2s ease-in-out infinite;
+    }
+    .celebration-emoji{
+      display:inline-block;
+      color:var(--pink-deep);
+      text-shadow:0 0 10px rgba(242,139,173,.4);
+      animation:celebrationBounce 1.1s ease-in-out infinite;
+    }
+    .celebration-emoji:last-child{ animation-delay:.15s; }
+    @keyframes celebrationGlow{
+      0%,100%{ box-shadow:0 0 0 0 rgba(242,139,173,.18); }
+      50%    { box-shadow:0 0 0 8px rgba(242,139,173,0); }
+    }
+    @keyframes celebrationBounce{
+      0%,100%{ transform:translateY(0); }
+      50%    { transform:translateY(-4px); }
+    }
+    #anniversaryCard.is-anniversary .countdown-stats{ display:none; }
+    #anniversaryCard.is-anniversary .celebration-banner{ display:flex; }
+
+    @media (max-width:640px){
+      .counter-grid{ grid-template-columns:1fr; }
+      .stat-num{ font-size:1.15rem; }
+    }
+
     .letter-layout{
       display:grid;
       grid-template-columns:.86fr 1.14fr;
@@ -1738,6 +1892,61 @@
           </div>
         </section>
 
+        <section id="counters" class="reveal">
+          <div class="wrap">
+            <div class="section-head">
+              <div>
+                <div class="kicker">Our time together</div>
+                <h2>We've come so far together</h2>
+              </div>
+              <p class="lead" style="margin:0;max-width:38ch;">
+                Every second with you had become a memory I'll never wanna forget
+              </p>
+            </div>
+
+            <div class="counter-grid">
+              <div class="counter-card glass">
+                <div class="counter-card-head">
+                  <span class="counter-icon icon-heart" aria-hidden="true"></span>
+                  <div>
+                    <div class="counter-title">Time Together</div>
+                    <div class="counter-sub">Since March 10, 2026</div>
+                  </div>
+                </div>
+                <div class="counter-stats">
+                  <div class="stat-block"><span class="stat-num" id="ttYears">0</span><span class="stat-label">Years</span></div>
+                  <div class="stat-block"><span class="stat-num" id="ttMonths">0</span><span class="stat-label">Months</span></div>
+                  <div class="stat-block"><span class="stat-num" id="ttDays">0</span><span class="stat-label">Days</span></div>
+                  <div class="stat-block"><span class="stat-num" id="ttHours">0</span><span class="stat-label">Hours</span></div>
+                  <div class="stat-block"><span class="stat-num" id="ttMinutes">0</span><span class="stat-label">Minutes</span></div>
+                  <div class="stat-block"><span class="stat-num" id="ttSeconds">0</span><span class="stat-label">Seconds</span></div>
+                </div>
+              </div>
+
+              <div class="counter-card glass" id="anniversaryCard">
+                <div class="counter-card-head">
+                  <span class="counter-icon icon-spark" aria-hidden="true"></span>
+                  <div>
+                    <div class="counter-title">Next Anniversary</div>
+                    <div class="counter-sub" id="nextAnnivLabel">March 10</div>
+                  </div>
+                </div>
+                <div class="counter-stats countdown-stats" id="countdownStats">
+                  <div class="stat-block"><span class="stat-num" id="cdDays">0</span><span class="stat-label">Days</span></div>
+                  <div class="stat-block"><span class="stat-num" id="cdHours">0</span><span class="stat-label">Hours</span></div>
+                  <div class="stat-block"><span class="stat-num" id="cdMinutes">0</span><span class="stat-label">Minutes</span></div>
+                  <div class="stat-block"><span class="stat-num" id="cdSeconds">0</span><span class="stat-label">Seconds</span></div>
+                </div>
+                <div class="celebration-banner" id="celebrationBanner">
+                  <span class="celebration-emoji">✦</span>
+                  Happy Anniversary!
+                  <span class="celebration-emoji">✦</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section id="letter" class="reveal">
           <div class="wrap">
             <div class="section-head">
@@ -2309,6 +2518,163 @@
     anniversaryInput.focus();
     window.burstAt = burstAt;
     window.heartPopAt = heartPopAt;
+
+    /* ── Relationship counters ────────────────────────────────────────────
+       Change ANNIVERSARY_DATE here if the date ever needs updating —
+       everything else (Time Together + Next Anniversary countdown) reads
+       from this single source of truth. Month is 0-indexed (2 = March). */
+    const ANNIVERSARY_DATE = new Date(2026, 2, 10, 0, 0, 0, 0);
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const counterEls = {
+      ttYears:   document.getElementById("ttYears"),
+      ttMonths:  document.getElementById("ttMonths"),
+      ttDays:    document.getElementById("ttDays"),
+      ttHours:   document.getElementById("ttHours"),
+      ttMinutes: document.getElementById("ttMinutes"),
+      ttSeconds: document.getElementById("ttSeconds"),
+      cdDays:    document.getElementById("cdDays"),
+      cdHours:   document.getElementById("cdHours"),
+      cdMinutes: document.getElementById("cdMinutes"),
+      cdSeconds: document.getElementById("cdSeconds"),
+      nextLabel: document.getElementById("nextAnnivLabel"),
+      annivCard: document.getElementById("anniversaryCard"),
+    };
+
+    // Calendar-accurate Y/M/D/H/M/S breakdown between two instants.
+    // Uses actual Date arithmetic (not fixed day-lengths) so it stays
+    // correct across leap years and months of different lengths.
+    function getCalendarBreakdown(start, end){
+      let years   = end.getFullYear()  - start.getFullYear();
+      let months  = end.getMonth()     - start.getMonth();
+      let days    = end.getDate()      - start.getDate();
+      let hours   = end.getHours()     - start.getHours();
+      let minutes = end.getMinutes()   - start.getMinutes();
+      let seconds = end.getSeconds()   - start.getSeconds();
+
+      if(seconds < 0){ seconds += 60; minutes--; }
+      if(minutes < 0){ minutes += 60; hours--; }
+      if(hours   < 0){ hours   += 24; days--; }
+      if(days < 0){
+        // Days in the month just before end's current month —
+        // correctly returns 28/29 for February depending on leap year.
+        const daysInPrevMonth = new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+        days += daysInPrevMonth;
+        months--;
+      }
+      if(months < 0){ months += 12; years--; }
+
+      return { years, months, days, hours, minutes, seconds };
+    }
+
+    function isAnniversaryToday(now){
+      return now.getMonth() === ANNIVERSARY_DATE.getMonth() &&
+             now.getDate()  === ANNIVERSARY_DATE.getDate();
+    }
+
+    // Always resolves to the next upcoming March 10 at midnight —
+    // automatically rolls to next year once this year's date has passed.
+    function getNextAnniversaryTarget(now){
+      const y = now.getFullYear();
+      const m = ANNIVERSARY_DATE.getMonth();
+      const d = ANNIVERSARY_DATE.getDate();
+      let target = new Date(y, m, d, 0, 0, 0, 0);
+      if(target.getTime() <= now.getTime()){
+        target = new Date(y + 1, m, d, 0, 0, 0, 0);
+      }
+      return target;
+    }
+
+    function msToDHMS(ms){
+      if(ms < 0) ms = 0;
+      const totalSeconds = Math.floor(ms / 1000);
+      return {
+        days:    Math.floor(totalSeconds / 86400),
+        hours:   Math.floor((totalSeconds % 86400) / 3600),
+        minutes: Math.floor((totalSeconds % 3600) / 60),
+        seconds: totalSeconds % 60,
+      };
+    }
+
+    // Updates a stat number and gives it a tiny pulse only when the value
+    // actually changes — avoids animating on every single tick.
+    function setStat(el, value){
+      const text = String(value);
+      if(el.textContent !== text){
+        el.textContent = text;
+        if(!prefersReducedMotion){
+          el.classList.remove("tick");
+          void el.offsetWidth;
+          el.classList.add("tick");
+        }
+      }
+    }
+
+    let celebrationInterval = null;
+
+    function enterCelebrationMode(){
+      if(counterEls.annivCard.classList.contains("is-anniversary")) return;
+      counterEls.annivCard.classList.add("is-anniversary");
+      if(!prefersReducedMotion && !celebrationInterval){
+        const burstFromCard = () => {
+          const r = counterEls.annivCard.getBoundingClientRect();
+          burstAt(r.left + r.width / 2, r.top + r.height * .35, 10);
+        };
+        burstFromCard();
+        celebrationInterval = setInterval(burstFromCard, 2600);
+      }
+    }
+
+    function exitCelebrationMode(){
+      counterEls.annivCard.classList.remove("is-anniversary");
+      if(celebrationInterval){
+        clearInterval(celebrationInterval);
+        celebrationInterval = null;
+      }
+    }
+
+    function tickCounters(){
+      const now = new Date();
+
+      // Time Together
+      const tt = getCalendarBreakdown(ANNIVERSARY_DATE, now);
+      setStat(counterEls.ttYears,   tt.years);
+      setStat(counterEls.ttMonths,  tt.months);
+      setStat(counterEls.ttDays,    tt.days);
+      setStat(counterEls.ttHours,   tt.hours);
+      setStat(counterEls.ttMinutes, tt.minutes);
+      setStat(counterEls.ttSeconds, tt.seconds);
+
+      // Next anniversary — celebration mode replaces the countdown on the day itself
+      if(isAnniversaryToday(now)){
+        enterCelebrationMode();
+      } else {
+        exitCelebrationMode();
+        const target = getNextAnniversaryTarget(now);
+        const cd = msToDHMS(target - now);
+        setStat(counterEls.cdDays,    cd.days);
+        setStat(counterEls.cdHours,   cd.hours);
+        setStat(counterEls.cdMinutes, cd.minutes);
+        setStat(counterEls.cdSeconds, cd.seconds);
+        counterEls.nextLabel.textContent = "March 10, " + target.getFullYear();
+      }
+    }
+
+    let counterTimer = null;
+    function startCounters(){
+      tickCounters();
+      if(!counterTimer) counterTimer = setInterval(tickCounters, 1000);
+    }
+    function stopCounters(){
+      if(counterTimer){ clearInterval(counterTimer); counterTimer = null; }
+      if(celebrationInterval){ clearInterval(celebrationInterval); celebrationInterval = null; }
+    }
+    // Pause ticking (and the celebration burst interval) when the tab is
+    // hidden, matching the battery-friendly pattern used elsewhere on the site.
+    document.addEventListener("visibilitychange", () => {
+      if(document.hidden) stopCounters(); else startCounters();
+    });
+    startCounters();
   </script>
 
   <!-- Firebase: admin panel, photo upload, and gallery -->
@@ -2672,76 +3038,4 @@
               perLoaded[i]      = loaded;
               const agg         = perLoaded.reduce((s, v) => s + v, 0);
               const label       = files.length > 1
-                ? 'Uploading ' + (i + 1) + ' of ' + files.length + '...'
-                : 'Uploading...';
-              setProgress(5 + (agg / totalBytes) * 85, label);
-            })
-          )
-        );
-
-        /* Stage 3 — Save to Firestore (90 → 100%) */
-        setProgress(90, 'Saving...');
-        const titleVal = document.getElementById('memTitle').value;
-        const labelVal = document.getElementById('memLabel').value;
-        const msgVal   = document.getElementById('memMsg').value;
-
-        await addDoc(collection(db, 'memories'), {
-          title:     titleVal,
-          label:     labelVal,
-          msg:       msgVal,
-          urls:      urls,       // new array format
-          url:       urls[0],    // backwards-compat for existing code
-          createdAt: serverTimestamp()
-        });
-
-        /* Done */
-        pBar.style.background = '#7ec8a0';
-        setProgress(100, urls.length > 1 ? urls.length + ' photos saved ♡' : 'Done! ♡');
-        status.innerText = 'Upload Complete! ♡';
-        if (window.burstAt) {
-          const br = document.getElementById('doUploadBtn').getBoundingClientRect();
-          window.burstAt(br.left + br.width / 2, br.top, 14);
-        }
-        setTimeout(() => { pWrap.style.display = 'none'; }, 3000);
-
-        document.getElementById('memTitle').value = '';
-        document.getElementById('memLabel').value = '';
-        document.getElementById('memMsg').value   = '';
-        document.getElementById('memFile').value  = '';
-
-      } catch (e) {
-        pWrap.style.display = 'none';
-        let msg = e.message || 'Unknown error';
-        if (msg.includes('PERMISSION_DENIED') || msg.includes('permission-denied'))
-          msg = 'Firestore permission denied — check Firebase Console → Firestore → Rules.';
-        status.innerText = 'Error: ' + msg;
-      }
-    };
-
-  } catch (globalErr) {
-    document.getElementById('statusText').innerText = 'Setup Error: ' + globalErr.message;
-  }
-</script>
-  <!-- ── Full-screen gallery / lightbox ────────────────────────────────────── -->
-  <div id="galleryOverlay" role="dialog" aria-modal="true" aria-label="Photo viewer">
-    <button id="gClose" class="g-close" aria-label="Close">✕</button>
-    <button id="gPrev"  class="g-nav g-prev" aria-label="Previous" style="display:none;">‹</button>
-    <button id="gNext"  class="g-nav g-next" aria-label="Next"     style="display:none;">›</button>
-
-    <div class="g-stage">
-      <img id="gImg" class="g-img" src="" alt="">
-    </div>
-
-    <div class="g-bottom">
-      <div id="gCounter" class="g-counter"></div>
-      <div id="gDots"    class="g-dots"   style="display:none;"></div>
-      <div class="g-meta">
-        <div id="gLabel" class="g-meta-label"></div>
-        <div id="gTitle" class="g-meta-title"></div>
-        <div id="gDate"  class="g-meta-date"></div>
-        <div id="gMsg"   class="g-meta-msg"></div>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
+                ? 'Uploading ' + (i +                                 
